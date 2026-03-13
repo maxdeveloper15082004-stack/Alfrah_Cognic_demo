@@ -205,7 +205,10 @@
         .options-container {
             position: absolute;
             bottom: 20%;
+            left: 0;
+            width: 100%;
             display: flex;
+            justify-content: center;
             gap: 1.5rem;
             opacity: 0; /* GSAP reveals */
             z-index: 20;
@@ -348,16 +351,19 @@
         @media (max-width: 900px) {
             .options-container {
                 flex-direction: column;
+                align-items: center;
                 gap: 1rem;
-                bottom: 22%;
+                bottom: 4%;
                 width: 90%;
+                left: 50%;
+                transform: translateX(-50%);
             }
             .futuristic-btn {
                 width: 100%;
                 justify-content: center;
             }
             .va-message {
-                margin-top: -32vh;
+                margin-top: -15vh;
             }
         }
     </style>
@@ -395,13 +401,13 @@
 
         <!-- Interactive Options -->
         <div class="options-container" id="options">
-            <button class="futuristic-btn pulse-anim-btn">
+            <button class="futuristic-btn pulse-anim-btn" id="btn-explore-cognix">
                 <i class="fa-solid fa-globe"></i> Explore Cognix
             </button>
-            <button class="futuristic-btn">
+            <button class="futuristic-btn" id="btn-explore-domain">
                 <i class="fa-solid fa-layer-group"></i> Explore Domain
             </button>
-            <button class="futuristic-btn">
+            <button class="futuristic-btn" id="btn-explore-packs">
                 <i class="fa-solid fa-box-open"></i> Explore Packs
             </button>
         </div>
@@ -552,11 +558,7 @@
             // ==========================================
             
             // Get Username
-            const urlParams = new URLSearchParams(window.location.search);
-            let rawName = urlParams.get('name') || localStorage.getItem('userName');
-            if (urlParams.get('name')) {
-                localStorage.setItem('userName', urlParams.get('name')); 
-            }
+            let rawName = localStorage.getItem('userName');
             let userName = "User";
             if (rawName && rawName.trim() !== "") {
                 // Get the first word/name to be friendly
@@ -619,7 +621,24 @@
               .to("#va-l2", { duration: 1, text: "I'm your Virtual Assistant!", ease: "none", opacity: 1 })
               .to("#va-l3", { duration: 1, text: "Please choose the option to explore!", ease: "none", opacity: 1 });
 
-            // Phase D: Buttons Reveal Stagger
+            // Phase D: Domain checking and Buttons Reveal Stagger
+            const isDomainCompleted = localStorage.getItem('domainCompleted') === 'true';
+            const domainBtn = document.getElementById("btn-explore-domain");
+            
+            // Domain Click Logic
+            if (domainBtn) {
+                domainBtn.addEventListener('click', () => {
+                    const params = new URLSearchParams(window.location.search);
+                    const domain = params.get('domain') || localStorage.getItem('selectedCourse') || 'AWS';
+                    window.location.href = `domain.html?name=${encodeURIComponent(userName)}&domain=${encodeURIComponent(domain)}`;
+                });
+            }
+
+            if (isDomainCompleted && domainBtn) {
+                // Remove the domain button so it disappears upon returning/reloading
+                domainBtn.remove();
+            }
+
             tl.to(options, { duration: 0.5, opacity: 1, ease: "power2.out" })
               .from(".futuristic-btn", { 
                   duration: 0.8, 

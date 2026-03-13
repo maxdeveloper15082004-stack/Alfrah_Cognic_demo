@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const selectedCourse = courseSelect ? courseSelect.value : (domainSelect ? domainSelect.value : null);
                                 if (selectedCourse) {
                                     localStorage.setItem('selectedCourse', selectedCourse);
+                                    localStorage.removeItem('domainCompleted'); // Reset on new submission
                                 }
                                 
                                 if (fullNameInput && fullNameInput.value) {
@@ -56,6 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     let redirectUrl = "cognix-ai.html";
                                     if (fullNameInput && fullNameInput.value) {
                                         redirectUrl += "?name=" + encodeURIComponent(fullNameInput.value);
+                                        if (domainSelect && domainSelect.value) {
+                                            redirectUrl += "&domain=" + encodeURIComponent(domainSelect.value);
+                                        }
+                                    } else if (domainSelect && domainSelect.value) {
+                                        redirectUrl += "?domain=" + encodeURIComponent(domainSelect.value);
                                     }
                                     window.location.href = redirectUrl;
                                 } else {
@@ -74,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const selectedCourse = courseSelect ? courseSelect.value : (domainSelect ? domainSelect.value : null);
                                 if (selectedCourse) {
                                     localStorage.setItem('selectedCourse', selectedCourse);
+                                    localStorage.removeItem('domainCompleted'); // Reset on new submission
                                 }
                                 
                                 if (fullNameInput && fullNameInput.value) {
@@ -84,6 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     let redirectUrl = "cognix-ai.html";
                                     if (fullNameInput && fullNameInput.value) {
                                         redirectUrl += "?name=" + encodeURIComponent(fullNameInput.value);
+                                        if (domainSelect && domainSelect.value) {
+                                            redirectUrl += "&domain=" + encodeURIComponent(domainSelect.value);
+                                        }
+                                    } else if (domainSelect && domainSelect.value) {
+                                        redirectUrl += "?domain=" + encodeURIComponent(domainSelect.value);
                                     }
                                     window.location.href = redirectUrl;
                                 } else {

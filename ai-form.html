@@ -7,16 +7,11 @@
 <title>AI Enrollment Form</title>
 
 <link rel="shortcut icon" type="image/png" href="assets/favicon.png">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="css/style.css">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
 </head>
@@ -189,11 +184,18 @@ body:JSON.stringify(formData)
 
 .then(response => {
 
+// Reset domain completion state for new form submission
+localStorage.removeItem('domainCompleted');
+
+// Store latest user info to localStorage
+localStorage.setItem('userName', formData.fullname);
+localStorage.setItem('selectedCourse', formData.domain);
+
 form.reset();
 
 /* Redirect to Cognix AI Page */
 
-window.location.href = "cognix-ai.html?name=" + encodeURIComponent(formData.fullname);
+window.location.href = "cognix-ai.html?name=" + encodeURIComponent(formData.fullname) + "&domain=" + encodeURIComponent(formData.domain);
 
 })
 
