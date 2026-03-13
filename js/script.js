@@ -51,8 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                     localStorage.setItem('userName', fullNameInput.value);
                                 }
                                 
+                                
                                 if (domainSelect) {
-                                    window.location.href = "cognix-ai.html";
+                                    let redirectUrl = "cognix-ai.html";
+                                    if (fullNameInput && fullNameInput.value) {
+                                        redirectUrl += "?name=" + encodeURIComponent(fullNameInput.value);
+                                    }
+                                    window.location.href = redirectUrl;
                                 } else {
                                     window.location.href = "https://rzp.io/rzp/alfrahdemo";
                                 }
@@ -76,7 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
 
                                 if (domainSelect) {
-                                    window.location.href = "cognix-ai.html";
+                                    let redirectUrl = "cognix-ai.html";
+                                    if (fullNameInput && fullNameInput.value) {
+                                        redirectUrl += "?name=" + encodeURIComponent(fullNameInput.value);
+                                    }
+                                    window.location.href = redirectUrl;
                                 } else {
                                     window.location.href = "https://rzp.io/rzp/alfrahdemo";
                                 }

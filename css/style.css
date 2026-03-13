@@ -322,10 +322,22 @@ main {
 /* Hero Image Right Side */
 .hero-image-wrapper {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 3rem;
   perspective: 1000px;
   width: 100%;
+  margin-top: -3rem;
+}
+
+.hero-image-wrapper .cta-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+.hero-image-wrapper .buttons-group {
+  justify-content: center;
 }
 
 .glass-preview {
@@ -816,6 +828,10 @@ main {
 
   .cta-wrapper {
     align-items: center;
+  }
+
+  .hero-image-wrapper {
+    margin-top: 2rem;
   }
 }
 
