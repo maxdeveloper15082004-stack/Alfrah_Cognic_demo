@@ -155,10 +155,36 @@
             50% { opacity: 1; }
         }
 
-        /* 4. Action Button */
-        .back-btn {
+        /* 4. Final Message & Action Button */
+        .final-container {
             position: absolute;
-            bottom: 15%;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            opacity: 0;
+            display: none;
+            z-index: 20;
+        }
+
+        .thank-you-text {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: #fff;
+            margin-bottom: 1rem;
+            text-transform: capitalize;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        }
+
+        .keep-continue-text {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: #d1d5db;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .back-btn {
             padding: 1rem 2rem;
             font-size: 1.2rem;
             font-family: 'Rajdhani', sans-serif;
@@ -174,9 +200,7 @@
             -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
             transition: all 0.3s ease;
-            opacity: 0;
-            display: none;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
         }
@@ -196,9 +220,6 @@
             }
             .domain-heading {
                 top: 40%;
-            }
-            .back-btn {
-                bottom: 10%;
             }
         }
     </style>
@@ -226,10 +247,14 @@
         <!-- Keep Watching status -->
         <div class="keep-watching" id="watchStatus">Keep watching...</div>
 
-        <!-- Return Button -->
-        <button class="back-btn" id="backBtn">
-            <i class="fa-solid fa-arrow-left"></i> Back to Cognix AI
-        </button>
+        <!-- Final Message -->
+        <div class="final-container" id="finalContainer">
+            <h2 class="thank-you-text">Thank You for watching</h2>
+            <p class="keep-continue-text">keep continue cognix ai</p>
+            <button class="back-btn" id="backBtn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Cognix AI
+            </button>
+        </div>
 
     </div>
 
@@ -285,6 +310,7 @@
             const videoElement = document.getElementById("courseVideo");
             const videoSource = document.getElementById("videoSource");
             const watchStatus = document.getElementById("watchStatus");
+            const finalContainer = document.getElementById("finalContainer");
             const backBtn = document.getElementById("backBtn");
 
             // Apply specific video securely
@@ -330,8 +356,9 @@
                 setTimeout(speakGreeting, 300);
             }
 
-            // Base centering positioning for heading
+            // Base centering positioning for heading & final container
             gsap.set(heading, { xPercent: -50, yPercent: -50 });
+            gsap.set(finalContainer, { xPercent: -50, yPercent: -50 });
 
             // 2. Timeline Animations
             const tl = gsap.timeline();
@@ -395,13 +422,13 @@
                         watchStatus.style.display = "none";
                     }
                 })
-                // Reveal Back Button
-                .set(backBtn, { display: "flex", y: 50, opacity: 0 })
-                .to(backBtn, {
-                    duration: 0.8,
+                // Reveal Final Content (contains Back Button & Text)
+                .set(finalContainer, { display: "block", y: 50, opacity: 0 })
+                .to(finalContainer, {
+                    duration: 1.2,
                     y: 0,
                     opacity: 1,
-                    ease: "back.out(1.5)"
+                    ease: "power2.out"
                 });
             });
 
