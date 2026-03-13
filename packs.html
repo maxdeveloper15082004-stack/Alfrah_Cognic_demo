@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Packs - Cognix AI</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="assets/favicon.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --neon-cyan: #0ff;
+            --neon-blue: #0088ff;
+            --dark-bg: #03050a;
+            --ring-color: #00bfa5;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--dark-bg);
+            overflow-x: hidden; /* Prevent ai-grid from causing huge horizontal scrolling offsets */
+            overflow-y: auto;
+            font-family: 'Outfit', sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* -------------------------------------
+           Background Holographic HUD Effects
+           ------------------------------------- */
+        .ambient-glow {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0,255,255,0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ai-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            transform: rotateX(60deg) translateY(100px) scale(3);
+            transform-origin: bottom center;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 50px; }
+        }
+
+        /* -------------------------------------
+           UI Layout Structure
+           ------------------------------------- */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            min-height: 100vh;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Stops container from drifting downwards based on grid height */
+            align-items: center;
+        }
+
+        /* Dynamic Heading */
+        .domain-heading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.3);
+            opacity: 0;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .highlight-text {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px rgba(0,255,255,0.8);
+        }
+
+        /* KPI Container */
+        .kpi-container {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            display: none; /* revealed via GSAP */
+            opacity: 1; /* Children animated independently */
+            margin-top: 180px; /* Increased safe margin to prevent heading overlap */
+            z-index: 15;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .section-subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: #fff;
+            letter-spacing: 1px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .cards-wrapper {
+            display: flex;
+            gap: 3rem; /* Space between each card */
+            justify-content: center;
+            width: 100%;
+            flex-wrap: nowrap; /* Forces row-wise */
+            padding-bottom: 20px;
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            background: rgba(4, 25, 30, 0.85); /* Dark teal matching UI */
+            border: 1px solid rgba(0, 191, 165, 0.2);
+            border-radius: 12px;
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-direction: column; /* Forces progress bar on top, text on bottom */
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+            flex: 1 1 0; /* Allows cards to uniformly share space instead of breaking to next row */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,255,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 191, 165, 0.15), inset 0 0 20px rgba(0, 191, 165, 0.05);
+            border-color: rgba(0, 191, 165, 0.4);
+        }
+
+        .circular-progress {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+        }
+
+        .circular-progress svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .circular-progress circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round; /* Matches the blunt ends in the image */
+        }
+
+        .circular-progress .bg {
+            stroke: #222; /* Very dark inner track */
+        }
+
+        .circular-progress .fg {
+            stroke: var(--ring-color);
+            filter: drop-shadow(0 0 3px rgba(0, 191, 165, 0.4));
+            stroke-dasharray: 314.16;
+            stroke-dashoffset: 314.16;
+        }
+
+        .progress-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .card-content {
+            text-align: center;
+            width: 100%;
+        }
+
+        .card-title {
+            color: #ffb300; /* Distinct yellow color */
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0 0 0.8rem 0;
+            text-transform: uppercase;
+        }
+
+        .card-desc {
+            color: #a0aab2; /* Light muted gray */
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 0;
+            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            width: 95%;
+            max-width: 1500px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap; /* Forces row-wise layout */
+            gap: 2rem; /* Space between each card */
+            margin-top: 10rem; /* Heavy space between bottom cards and top cards */
+            margin-bottom: 4rem;
+            z-index: 15;
+            opacity: 1;
+            perspective: 1000px; /* Required for rendering the 3D scroll animation smoothly */
+        }
+
+        .pricing-card {
+            background: rgba(4, 25, 30, 0.85);
+            border: 1px solid rgba(0, 191, 165, 0.2);
+            border-radius: 12px;
+            padding: 2.5rem 1.5rem; /* Better breathing room internally */
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 320px; 
+            flex: 1 1 0; /* Allows cards to shrink side-by-side gracefully instead of wrapping */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,255,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            opacity: 0; /* JS handles reveal */
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 191, 165, 0.15), inset 0 0 20px rgba(0, 191, 165, 0.05);
+            border-color: rgba(0, 191, 165, 0.4);
+        }
+
+        .pricing-title {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0 0 1.2rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem 0;
+            flex-grow: 1;
+        }
+
+        .pricing-features li {
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .pricing-features li i {
+            color: var(--ring-color);
+            font-size: 0.9rem;
+            margin-top: 3px;
+        }
+
+        .pricing-price-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .price-val {
+            color: #ffb300;
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .price-month {
+            color: #a0aab2;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Action Button */
+        .back-btn {
+            margin-top: 3.5rem;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0; /* JS handles reveal */
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.4);
+            background: rgba(0, 255, 255, 0.2);
+            text-shadow: 0 0 8px #fff;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            width: 95%;
+            max-width: 1100px;
+            margin-top: 2rem;
+            margin-bottom: 5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 15;
+            position: relative;
+        }
+
+        .comparison-heading {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+        }
+
+        .comparison-table-wrapper {
+            width: 100%;
+            background: rgba(4, 25, 30, 0.85);
+            border: 1px solid rgba(0, 191, 165, 0.2);
+            border-radius: 12px;
+            padding: 2.5rem 3rem;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,255,0.02);
+            overflow: hidden;
+        }
+
+        .table-header, .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            align-items: center;
+            padding: 1.5rem 0;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .table-header {
+            border-bottom: 2px solid rgba(0, 191, 165, 0.3);
+            font-weight: 800;
+            color: #ffffff;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            padding-bottom: 2rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .table-header .lead-col {
+            text-align: left;
+            padding-left: 2rem; /* Add indentation for alignment aesthetic */
+        }
+
+        .stack-col {
+            line-height: 1.5;
+        }
+
+        .table-subtext {
+            font-size: 0.7rem;
+            color: #a0aab2;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .table-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.02); /* Slight highlight on row hover */
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .plan-name {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: left;
+            padding-left: 2rem;
+        }
+
+        .plan-val {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #d1d5db;
+        }
+
+        .plan-total {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #ffb300;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 1100px) {
+            .pricing-section, .cards-wrapper {
+                flex-wrap: wrap; /* Only allow wrapping when screens get extremely small like tablets */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-container {
+                margin-top: 160px; /* Safe padding for mobile overlapping */
+            }
+            .cards-wrapper {
+                gap: 1.5rem;
+            }
+            .kpi-card {
+                padding: 2rem 1rem;
+                width: 90%;
+                max-width: 320px;
+            }
+            .section-subtitle {
+                font-size: 1.8rem;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+    <div class="ai-grid"></div>
+
+    <div class="content-layer">
+        
+        <!-- Big Animated Heading -->
+        <h1 class="domain-heading" id="mainHeading">
+            Explore <span class="highlight-text">Packs</span>
+        </h1>
+
+        <!-- KPI UI Container -->
+        <div class="kpi-container" id="kpiContainer">
+            
+            <h2 class="section-subtitle" id="subHeading">Key Performance Indicators</h2>
+            
+            <div class="cards-wrapper">
+                
+                <!-- Card 1 -->
+                <div class="kpi-card">
+                    <div class="circular-progress">
+                        <!-- Circumference of r=50 is 314.16 -->
+                        <svg viewBox="0 0 120 120">
+                            <circle class="bg" cx="60" cy="60" r="50"></circle>
+                            <circle class="fg" id="circle1" cx="60" cy="60" r="50"></circle>
+                        </svg>
+                        <div class="progress-value">100%</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Internship Assured</h3>
+                        <p class="card-desc">100% Guaranteed Internships</p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="kpi-card">
+                    <div class="circular-progress">
+                        <svg viewBox="0 0 120 120">
+                            <circle class="bg" cx="60" cy="60" r="50"></circle>
+                            <!-- 95% filled = 5% empty = 15.7 offset -->
+                            <circle class="fg" id="circle2" cx="60" cy="60" r="50"></circle>
+                        </svg>
+                        <div class="progress-value">95%</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Placements</h3>
+                        <p class="card-desc">95% Placement Rate</p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="kpi-card">
+                    <div class="circular-progress">
+                        <svg viewBox="0 0 120 120">
+                            <circle class="bg" cx="60" cy="60" r="50"></circle>
+                            <!-- 90% filled = 10% empty = 31.4 offset -->
+                            <circle class="fg" id="circle3" cx="60" cy="60" r="50"></circle>
+                        </svg>
+                        <div class="progress-value">90%</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">ROI</h3>
+                        <p class="card-desc">90% Return on Investment Given</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Pricing Section -->
+            <div class="pricing-section" id="pricingSection">
+                
+                <!-- Card 1: ORGIN -->
+                <div class="pricing-card">
+                    <h3 class="pricing-title">ORGIN</h3>
+                    <ul class="pricing-features">
+                        <li><i class="fa-solid fa-check"></i> 90 days live classes</li>
+                        <li><i class="fa-solid fa-check"></i> Recording versions</li>
+                        <li><i class="fa-solid fa-check"></i> Doubt clarification sessions</li>
+                        <li><i class="fa-solid fa-check"></i> Assessments</li>
+                        <li><i class="fa-solid fa-check"></i> Module wise Projects</li>
+                        <li><i class="fa-solid fa-check"></i> 1 Major project with guidance</li>
+                        <li><i class="fa-solid fa-check"></i> ALPHA ORGIN KIT</li>
+                        <li><i class="fa-solid fa-check"></i> Career Insurance worth of Rs.999</li>
+                        <li><i class="fa-solid fa-check"></i> Life time access for recordings</li>
+                        <li><i class="fa-solid fa-check"></i> Certifications (hard copy)</li>
+                    </ul>
+                    <div class="pricing-price-box">
+                        <span class="price-val">₹3,000</span> <span class="price-month">/month</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: ELITE -->
+                <div class="pricing-card">
+                    <h3 class="pricing-title">ELITE</h3>
+                    <ul class="pricing-features">
+                        <li><i class="fa-solid fa-check"></i> Origin pack starting from live classes to certifications</li>
+                        <li><i class="fa-solid fa-check"></i> Aptitude & Reasoning</li>
+                        <li><i class="fa-solid fa-check"></i> Soft skill development</li>
+                        <li><i class="fa-solid fa-check"></i> Communication building</li>
+                        <li><i class="fa-solid fa-check"></i> Career Acceleration program</li>
+                        <li><i class="fa-solid fa-check"></i> Resume making guidance</li>
+                        <li><i class="fa-solid fa-check"></i> ALPHA ELITE KIT</li>
+                        <li><i class="fa-solid fa-check"></i> Career Insurance worth of Rs.1599</li>
+                        <li><i class="fa-solid fa-check"></i> Mock interviews</li>
+                        <li><i class="fa-solid fa-check"></i> Online internship</li>
+                        <li><i class="fa-solid fa-check"></i> Interview based stipend</li>
+                    </ul>
+                    <div class="pricing-price-box">
+                        <span class="price-val">₹4,000</span> <span class="price-month">/month</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: PRIME -->
+                <div class="pricing-card">
+                    <h3 class="pricing-title">PRIME</h3>
+                    <ul class="pricing-features">
+                        <li><i class="fa-solid fa-check"></i> Elite pack starting from live classes with certifications to career acceleration program</li>
+                        <li><i class="fa-solid fa-check"></i> Offline Internship</li>
+                        <li><i class="fa-solid fa-check"></i> Chennai / Banglore / Hyderabad</li>
+                        <li><i class="fa-solid fa-check"></i> Interview based stipend</li>
+                        <li><i class="fa-solid fa-check"></i> Internship Cum Placement</li>
+                        <li><i class="fa-solid fa-check"></i> ALPHA PRIME KIT</li>
+                        <li><i class="fa-solid fa-check"></i> Career Insurance worth of Rs.2999</li>
+                        <li><i class="fa-solid fa-check"></i> Interview assistance</li>
+                        <li><i class="fa-solid fa-check"></i> 100% lifetime placement guidance</li>
+                        <li><i class="fa-solid fa-check"></i> Alpha launchpad</li>
+                    </ul>
+                    <div class="pricing-price-box">
+                        <span class="price-val">₹5,000</span> <span class="price-month">/month</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: ALPHA ULTRA -->
+                <div class="pricing-card">
+                    <h3 class="pricing-title">ALPHA ULTRA</h3>
+                    <ul class="pricing-features">
+                        <li><i class="fa-solid fa-check"></i> Prime pack starting from live classes with certifications along with career acceleration program and offline internship and 100% placement guidance and lifetime assistance.</li>
+                        <li><i class="fa-solid fa-check"></i> Can access 3 different programs simultaneously or sequential</li>
+                        <li><i class="fa-solid fa-check"></i> ALPHA ULTRA KIT</li>
+                        <li><i class="fa-solid fa-check"></i> Career Insurance worth of Rs.3499</li>
+                    </ul>
+                    <div class="pricing-price-box">
+                        <span class="price-val">₹7,500</span> <span class="price-month">/month</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Plan Comparison Section -->
+            <div class="comparison-section" id="comparisonSection">
+                <h2 class="comparison-heading">PLAN COMPARISON</h2>
+                
+                <div class="comparison-table-wrapper">
+                    <!-- Header Row -->
+                    <div class="table-header">
+                        <div class="lead-col">COMPARISON OF PLAN</div>
+                        <div class="stack-col">EMI / MONTH<br><span class="table-subtext">(6 MONTHS)</span></div>
+                        <div>REG FEES</div>
+                        <div>TOTAL</div>
+                    </div>
+
+                    <!-- Row 1 -->
+                    <div class="table-row">
+                        <div class="plan-name">ORGIN</div>
+                        <div class="plan-val">₹3000</div>
+                        <div class="plan-val">₹3000</div>
+                        <div class="plan-total">₹21,000</div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="table-row">
+                        <div class="plan-name">ELITE</div>
+                        <div class="plan-val">₹4000</div>
+                        <div class="plan-val">₹4000</div>
+                        <div class="plan-total">₹28,000</div>
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="table-row">
+                        <div class="plan-name">PRIME</div>
+                        <div class="plan-val">₹5000</div>
+                        <div class="plan-val">₹5000</div>
+                        <div class="plan-total">₹35,000</div>
+                    </div>
+
+                    <!-- Row 4 -->
+                    <div class="table-row">
+                        <div class="plan-name">ALPHA ULTRA</div>
+                        <div class="plan-val">₹7500</div>
+                        <div class="plan-val">₹5000</div>
+                        <div class="plan-total">₹50,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Return Button -->
+            <button class="back-btn" id="backBtn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Cognix AI
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- GSAP Animation Library & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+            // URL Parameter Extraction
+            const urlParams = new URLSearchParams(window.location.search);
+            let userName = urlParams.get('name') || localStorage.getItem('userName') || "User";
+            if (userName.includes(" ")) {
+                userName = userName.trim().split(" ")[0];
+            }
+
+            const rawDomain = urlParams.get('domain') || localStorage.getItem('selectedCourse') || "AWS";
+
+            // Elements
+            const heading = document.getElementById("mainHeading");
+            const kpiContainer = document.getElementById("kpiContainer");
+            const backBtn = document.getElementById("backBtn");
+
+            const circle1 = document.getElementById("circle1");
+            const circle2 = document.getElementById("circle2");
+            const circle3 = document.getElementById("circle3");
+
+            // Base centering positioning for heading
+            gsap.set(heading, { xPercent: -50, yPercent: -50 });
+
+            // Timeline Animations mimicking domain.html
+            const tl = gsap.timeline();
+
+            // Phase 1: Fancy Heading Appearance
+            tl.to(heading, {
+                duration: 2,
+                opacity: 1,
+                scale: 1.1,
+                ease: "power2.out"
+            })
+            // Quick pulse effect
+            .to(heading, {
+                duration: 0.8,
+                scale: 1,
+                ease: "back.out(1.5)"
+            })
+            // Short Pause to read
+            .to({}, { duration: 1 })
+            // Phase 2: Move Heading to Top & Shrink
+            .to(heading, {
+                duration: 1.5,
+                top: 60, /* Specific pixel pin safely above the container */
+                scale: 0.65,
+                yPercent: 0,
+                ease: "power3.inOut"
+            }, "moveUp")
+
+            // Phase 3: Setup Container
+            .set(kpiContainer, { display: "flex" }, "moveUp+=0.5")
+            
+            // Phase 4: Subtitle reveal
+            .fromTo("#subHeading", 
+                { opacity: 0, y: 30 },
+                { duration: 1, opacity: 1, y: 0, ease: "power3.out" })
+
+            // Phase 5: Cards stagger reveal one by one
+            .fromTo(".kpi-card", 
+                { opacity: 0, y: 50, scale: 0.9 },
+                { duration: 1, opacity: 1, y: 0, scale: 1, stagger: 0.3, ease: "back.out(1.5)",
+                    onComplete: () => {
+                        // Animate SVG strokeDashoffset variables respectively
+                        // 100% -> offset 0
+                        gsap.to(circle1, { strokeDashoffset: 0, duration: 1.5, ease: "power2.out" });
+                        // 95% -> offset 15.7
+                        gsap.to(circle2, { strokeDashoffset: 15.7, duration: 1.5, ease: "power2.out" });
+                        // 90% -> offset 31.42
+                        gsap.to(circle3, { strokeDashoffset: 31.42, duration: 1.5, ease: "power2.out" });
+                    }
+                }, "-=0.2");
+
+            // Phase 6: Pricing Cards Scroll Animation (Premium Reveal with inner contents)
+            const pricingTl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "#pricingSection",
+                    start: "top 80%", // starts animation when section hits 80% of viewport
+                    toggleActions: "play none none reverse" // plays on scroll down, reverses on scroll up
+                }
+            });
+
+            // First: Animate the 3D card containers in
+            pricingTl.fromTo(".pricing-card", 
+                { 
+                    opacity: 0, 
+                    y: 40 
+                },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    duration: 1.0, 
+                    stagger: 0.2, 
+                    ease: "power3.out"
+                }
+            );
+
+            // Phase 7: Comparison Table Scroll Animation
+            const comparisonTl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "#comparisonSection",
+                    start: "top 85%", // starts animation gracefully when section reaches viewport
+                    toggleActions: "play none none reverse" 
+                }
+            });
+
+            // Slowly scale open and fade the heading directly from the center
+            comparisonTl.fromTo(".comparison-heading",
+                { opacity: 0, scale: 0.5, filter: "blur(5px)" },
+                { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.5, ease: "power3.out" }
+            )
+            // Gently pop open the wrapper
+            .fromTo(".comparison-table-wrapper",
+                { opacity: 0, y: 50 },
+                { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
+                "-=0.8" // Start revealing the wrapper right before heading finishes
+            )
+            // Beautifully slide and stagger the columns from left to right representing the data populating
+            .fromTo(".table-header > div, .table-row > div",
+                { opacity: 0, x: -20 },
+                { opacity: 1, x: 0, duration: 0.6, stagger: 0.05, ease: "power2.out" },
+                "-=0.6"
+            );
+
+            // Phase 8: Reveal Back Button tied to scroll
+            gsap.fromTo(backBtn, 
+                { opacity: 0, y: 20 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: "#comparisonSection",
+                        start: "bottom 95%", // reveals completely at the end
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+
+            // Back Button Redirect
+            backBtn.addEventListener('click', () => {
+                // Return gracefully to ai dashboard, ensuring URL parameters are maintained
+                localStorage.setItem('packsCompleted', 'true');
+                window.location.href = `cognix-ai.html?name=${encodeURIComponent(userName)}&domain=${encodeURIComponent(rawDomain)}`;
+            });
+
+        });
+    </script>
+</body>
+</html>

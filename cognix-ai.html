@@ -258,6 +258,24 @@
             text-shadow: 0 0 8px #fff;
         }
 
+        /* Completed Status Button */
+        .futuristic-btn.completed-btn {
+            background: rgba(0, 255, 100, 0.05); /* subtle green tint */
+            border-color: rgba(0, 255, 100, 0.4);
+            color: #a0aab2; /* muted transparent text */
+            box-shadow: 0 0 15px rgba(0, 255, 100, 0.1);
+            pointer-events: none; /* disables interaction */
+            text-shadow: none;
+            transform: scale(0.98);
+        }
+
+        .futuristic-btn.completed-btn i.fa-check {
+            color: #00ff64; /* solid green check icon */
+            text-shadow: 0 0 8px rgba(0, 255, 100, 0.6);
+            margin-right: 5px;
+            font-size: 1.2rem;
+        }
+
         .futuristic-btn:hover::before {
             animation: energy-beam 1.2s infinite ease-in-out;
         }
@@ -621,39 +639,88 @@
               .to("#va-l2", { duration: 1, text: "I'm your Virtual Assistant!", ease: "none", opacity: 1 })
               .to("#va-l3", { duration: 1, text: "Please choose the option to explore!", ease: "none", opacity: 1 });
 
-            // Phase D: Domain checking and Buttons Reveal Stagger
-            const isDomainCompleted = localStorage.getItem('domainCompleted') === 'true';
-            const domainBtn = document.getElementById("btn-explore-domain");
+            // Phase D: Completion state checking and Buttons Reveal Stagger
             
-            // Domain Click Logic
-            if (domainBtn) {
-                domainBtn.addEventListener('click', () => {
-                    const params = new URLSearchParams(window.location.search);
-                    const domain = params.get('domain') || localStorage.getItem('selectedCourse') || 'AWS';
-                    window.location.href = `domain.html?name=${encodeURIComponent(userName)}&domain=${encodeURIComponent(domain)}`;
-                });
+            // Clear progress if user explicitly refreshes/reloads the dashboard page
+            const navEntries = performance.getEntriesByType("navigation");
+            if (navEntries.length > 0 && navEntries[0].type === "reload") {
+                localStorage.removeItem('domainCompleted');
+                localStorage.removeItem('cognixCompleted');
+                localStorage.removeItem('packsCompleted');
             }
+
+            const isDomainCompleted = localStorage.getItem('domainCompleted') === 'true';
+            const isCognixCompleted = localStorage.getItem('cognixCompleted') === 'true';
+            const isPacksCompleted = localStorage.getItem('packsCompleted') === 'true';
             
-            // Dummy logic for other buttons to prevent refresh bugs in production
+            const domainBtn = document.getElementById("btn-explore-domain");
             const cognixBtn = document.getElementById("btn-explore-cognix");
             const packsBtn = document.getElementById("btn-explore-packs");
             
-            if (cognixBtn) {
-                cognixBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log("Explore Cognix: Coming soon");
-                });
-            }
-            if (packsBtn) {
-                packsBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log("Explore Packs: Coming soon");
-                });
-            }
+            // Helper function to dynamically complete button with animation
+            const applyCompletedState = (btn, text, animated = false) => {
+                if(!btn) return;
+                
+                const updateDOM = () => {
+                    btn.innerHTML = `<i class="fa-solid fa-check"></i> ${text} Completed`;
+                    btn.classList.add("completed-btn");
+                    btn.disabled = true;
+                };
 
-            if (isDomainCompleted && domainBtn) {
-                // Remove the domain button so it disappears upon returning/reloading
-                domainBtn.remove();
+                if (animated) {
+                    // GSAP Visual Animation replacing normal click
+                    const animTl = gsap.timeline();
+                    animTl.to(btn, { scale: 0.95, filter: "brightness(2)", duration: 0.2 })
+                          .add(updateDOM)
+                          .to(btn, { 
+                              scale: 0.98, 
+                              filter: "brightness(1)",
+                              boxShadow: "0 0 25px rgba(0, 255, 100, 0.6)", 
+                              duration: 0.5, 
+                              ease: "back.out(1.5)" 
+                          });
+                } else {
+                    updateDOM();
+                }
+            };
+
+            // Cognix Button Logic
+            if (cognixBtn) {
+                if (isCognixCompleted) {
+                    applyCompletedState(cognixBtn, "Cognix");
+                } else {
+                    cognixBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        localStorage.setItem('cognixCompleted', 'true');
+                        applyCompletedState(cognixBtn, "Cognix", true);
+                    });
+                }
+            }
+            
+            // Domain Button Logic
+            if (domainBtn) {
+                if (isDomainCompleted) {
+                    applyCompletedState(domainBtn, "Domain");
+                } else {
+                    domainBtn.addEventListener('click', () => {
+                        const params = new URLSearchParams(window.location.search);
+                        const domain = params.get('domain') || localStorage.getItem('selectedCourse') || 'AWS';
+                        window.location.href = `domain.html?name=${encodeURIComponent(userName)}&domain=${encodeURIComponent(domain)}`;
+                    });
+                }
+            }
+            
+            // Packs Button Logic
+            if (packsBtn) {
+                if (isPacksCompleted) {
+                    applyCompletedState(packsBtn, "Packs");
+                } else {
+                    packsBtn.addEventListener('click', (e) => {
+                        const params = new URLSearchParams(window.location.search);
+                        const domain = params.get('domain') || localStorage.getItem('selectedCourse') || 'AWS';
+                        window.location.href = `packs.html?name=${encodeURIComponent(userName)}&domain=${encodeURIComponent(domain)}`;
+                    });
+                }
             }
 
             tl.to(options, { duration: 0.5, opacity: 1, ease: "power2.out" })
@@ -664,7 +731,8 @@
                   stagger: 0.2, 
                   ease: "back.out(1.5)" 
               }, "-=0.2")
-              .to(".futuristic-btn", {
+              // Only pulse active buttons heavily
+              .to(".futuristic-btn:not(.completed-btn)", {
                   boxShadow: "0 0 40px rgba(0, 255, 255, 1), inset 0 0 20px rgba(0, 255, 255, 0.6)",
                   duration: 0.3,
                   yoyo: true,

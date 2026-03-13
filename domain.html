@@ -83,7 +83,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; /* Forces top-down rendering to prevent the video from ever overlapping upward into the heading */
             align-items: center;
         }
 
@@ -97,11 +97,11 @@
             font-weight: 800;
             color: #ffffff;
             text-align: center;
-            letter-spacing: 2px;
             text-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.3);
             opacity: 0;
             margin: 0;
             line-height: 1.2;
+            z-index: 20; /* Ensures the glowing text always stays cleanly above */
         }
 
         .highlight-text {
@@ -122,7 +122,8 @@
             overflow: hidden;
             display: none; /* revealed via GSAP */
             opacity: 0;
-            margin-top: 18vh; /* increased space below moved heading */
+            margin-top: 26vh; /* Pushed down to leave the entire top 25% of the screen free for the heading */
+            max-height: 55vh; /* Dynamically prevents the video pushing the buttons out of the fixed screen bounds */
             z-index: 15;
             -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
@@ -187,11 +188,11 @@
             text-shadow: 0 0 8px #fff;
         }
 
-        /* Responsive Layouts */
         @media (max-width: 768px) {
             .video-box {
                 width: 95%;
-                margin-top: 15vh;
+                margin-top: 22vh; /* Give adequate room on smaller phone screens as well */
+                max-height: 50vh;
             }
             .domain-heading {
                 top: 40%;
@@ -350,12 +351,12 @@
             })
             // Short Pause to read
             .to({}, { duration: 1 })
-            // Phase 2: Move Heading to Top & Shrink
+            // Phase 2: Move Heading to Top safely
             .to(heading, {
                 duration: 1.5,
-                top: "4%",
+                top: "10%", /* Symmetrical safe positioning above the 25vh video line */
                 scale: 0.65,
-                yPercent: 0,
+                yPercent: -50, /* Keep perfectly aligned naturally off its own new Y center */
                 ease: "power3.inOut"
             }, "moveUp")
 
@@ -407,6 +408,7 @@
             // 4. Back Button Redirect
             backBtn.addEventListener('click', () => {
                 // Return safely keeping name in URL
+                localStorage.setItem('domainCompleted', 'true');
                 window.location.href = `cognix-ai.html?name=${encodeURIComponent(userName)}&domain=${encodeURIComponent(rawDomain)}`;
             });
 

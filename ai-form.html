@@ -186,6 +186,8 @@ body:JSON.stringify(formData)
 
 // Reset domain completion state for new form submission
 localStorage.removeItem('domainCompleted');
+localStorage.removeItem('cognixCompleted');
+localStorage.removeItem('packsCompleted');
 
 // Store latest user info to localStorage
 localStorage.setItem('userName', formData.fullname);
