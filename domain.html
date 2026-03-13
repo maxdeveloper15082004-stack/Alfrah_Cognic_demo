@@ -286,9 +286,13 @@
             const watchStatus = document.getElementById("watchStatus");
             const backBtn = document.getElementById("backBtn");
 
-            // Apply specific video
-            const videoSrc = videoMap[rawDomain] || "assets/aws_trial.mp4"; // fallback to AWS
-            videoSource.setAttribute("src", videoSrc);
+            // Apply specific video securely
+            if (rawDomain && videoMap[rawDomain]) {
+                videoSource.setAttribute("src", videoMap[rawDomain]);
+            } else {
+                console.warn(`No valid video mapping found for domain: ${rawDomain}. Falling back to AWS default.`);
+                videoSource.setAttribute("src", "assets/aws_trial.mp4");
+            }
             videoElement.load(); // necessary to apply DOM changes to <video>
 
             // Web Speech API - AI Voice Greeting

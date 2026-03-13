@@ -633,6 +633,23 @@
                     window.location.href = `domain.html?name=${encodeURIComponent(userName)}&domain=${encodeURIComponent(domain)}`;
                 });
             }
+            
+            // Dummy logic for other buttons to prevent refresh bugs in production
+            const cognixBtn = document.getElementById("btn-explore-cognix");
+            const packsBtn = document.getElementById("btn-explore-packs");
+            
+            if (cognixBtn) {
+                cognixBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("Explore Cognix: Coming soon");
+                });
+            }
+            if (packsBtn) {
+                packsBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("Explore Packs: Coming soon");
+                });
+            }
 
             if (isDomainCompleted && domainBtn) {
                 // Remove the domain button so it disappears upon returning/reloading
