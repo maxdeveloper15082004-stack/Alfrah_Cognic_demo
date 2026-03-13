@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Enrollment Form</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="assets/favicon.png">
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body class="form-page">
+
+    <!-- Background Elements -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <header class="site-header">
+        <a href="index.html" class="logo-wrapper">
+            <img src="assets/logo.png" alt="Alfrah Cognix Logo" class="logo">
+        </a>
+    </header>
+
+    <main class="form-container">
+        <a href="index.html" class="back-link" data-aos="fade-right"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+
+        <div class="form-glass-card" data-aos="fade-up" data-aos-duration="800">
+            <h2 class="form-title">Register for Demo</h2>
+            <p class="form-subtitle">Fill in your details to secure your spot.</p>
+
+            <form action="#" method="POST" id="enrollmentForm">
+
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-user icon"></i>
+                        <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="collegeName">College Name</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-university icon"></i>
+                        <input type="text" id="collegeName" name="collegeName" placeholder="University of XYZ" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="department">Department</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-building icon"></i>
+                        <input type="text" id="department" name="department" placeholder="Computer Science" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Select Course</label>
+                    <div class="input-icon-wrapper custom-select-wrapper">
+                        <i class="fa-solid fa-book-open icon"></i>
+
+                        <!-- Custom Select Structure -->
+                        <div class="custom-select" id="courseSelect">
+                            <div class="custom-select-trigger">
+                                <span class="custom-select-text">Choose a course</span>
+                                <i class="fa-solid fa-chevron-down dropdown-icon"></i>
+                            </div>
+
+                            <div class="custom-options-container">
+                                <div class="custom-option" data-value="AI">
+                                    <i class="fa-solid fa-brain option-icon"></i>
+                                    <span>Artificial Intelligence (AI)</span>
+                                </div>
+                                <div class="custom-option" data-value="Data Analytics">
+                                    <i class="fa-solid fa-chart-line option-icon"></i>
+                                    <span>Data Analytics</span>
+                                </div>
+                                <div class="custom-option" data-value="UI/UX Design">
+                                    <i class="fa-solid fa-pen-nib option-icon"></i>
+                                    <span>UI/UX Design</span>
+                                </div>
+                                <div class="custom-option" data-value="Full Stack">
+                                    <i class="fa-solid fa-code option-icon"></i>
+                                    <span>Full Stack Development</span>
+                                </div>
+                                <div class="custom-option" data-value="AWS">
+                                    <i class="fa-brands fa-aws option-icon"></i>
+                                    <span>Amazon Web Services (AWS)</span>
+                                </div>
+                                <div class="custom-option" data-value="Cyber Security">
+                                    <i class="fa-solid fa-shield-halved option-icon"></i>
+                                    <span>Cyber Security</span>
+                                </div>
+                                <div class="custom-option" data-value="Auto CAD">
+                                    <i class="fa-solid fa-compass option-icon"></i>
+                                    <span>Auto CAD</span>
+                                </div>
+                                <div class="custom-option" data-value="IoT & Robotics">
+                                    <i class="fa-solid fa-robot option-icon"></i>
+                                    <span>IoT & Robotics</span>
+                                </div>
+                                <div class="custom-option" data-value="Embedded System">
+                                    <i class="fa-solid fa-microchip option-icon"></i>
+                                    <span>Embedded System</span>
+                                </div>
+                                <div class="custom-option" data-value="VLSI Design">
+                                    <i class="fa-solid fa-memory option-icon"></i>
+                                    <span>VLSI Design</span>
+                                </div>
+                                <div class="custom-option" data-value="Digital Marketing">
+                                    <i class="fa-solid fa-bullhorn option-icon"></i>
+                                    <span>Digital Marketing</span>
+                                </div>
+                                <div class="custom-option" data-value="HR">
+                                    <i class="fa-solid fa-users option-icon"></i>
+                                    <span>Human Resources (HR)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden native select for form submission -->
+                        <select id="course" name="course" required class="hidden-select" aria-label="Select Course">
+                            <option value="" disabled selected>Choose a course</option>
+                            <option value="AI">Artificial Intelligence (AI)</option>
+                            <option value="Data Analytics">Data Analytics</option>
+                            <option value="UI/UX Design">UI/UX Design</option>
+                            <option value="Full Stack">Full Stack Development</option>
+                            <option value="AWS">Amazon Web Services (AWS)</option>
+                            <option value="Cyber Security">Cyber Security</option>
+                            <option value="Auto CAD">Auto CAD</option>
+                            <option value="IoT & Robotics">IoT & Robotics</option>
+                            <option value="Embedded System">Embedded System</option>
+                            <option value="VLSI Design">VLSI Design</option>
+                            <option value="Digital Marketing">Digital Marketing</option>
+                            <option value="HR">Human Resources (HR)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Pay Now</span> <i class="fa-solid fa-credit-card"></i>
+                </button>
+
+            </form>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfrah Cognix AI - Dashboard</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="assets/favicon.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --neon-cyan: #0ff;
+            --neon-blue: #0088ff;
+            --dark-bg: #03050a;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-bg);
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+            color: white;
+        }
+
+        /* -------------------------------------
+           Backgrounds (3D Space & Network)
+           ------------------------------------- */
+        #canvas-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+        
+        #particles-js {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        /* -------------------------------------
+           HUD & Glowing Interfaces
+           ------------------------------------- */
+        .ai-hud {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            /* Glowing gradient vignette */
+            box-shadow: inset 0 0 150px rgba(0, 255, 255, 0.05);
+            background: radial-gradient(circle at center, transparent 40%, rgba(3, 5, 10, 0.8) 100%);
+        }
+
+        .ai-grid {
+            position: absolute;
+            inset: 0;
+            /* AI grid overlay */
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.4;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            transform: rotateX(60deg) translateY(100px) scale(2.5);
+            transform-origin: bottom center;
+            animation: gridMove 15s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 50px; }
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 255, 0.4);
+            position: absolute;
+            top: 0; left: 0;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.3);
+            animation: scan 6s linear infinite;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+
+        /* -------------------------------------
+           UI Layer (Text & Buttons)
+           ------------------------------------- */
+        .ui-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* Let clicks pass through unclickable areas */
+        }
+
+        /* 1. Virtual Assistant Boot Phase */
+        .boot-sequence {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 600;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+            letter-spacing: 3px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* 2. User Greeting Phase */
+        .greeting-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            /* Translation handled securely by GSAP xPercent/yPercent */
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.4);
+            letter-spacing: 2px;
+            opacity: 0; /* JS handles reveal */
+            white-space: nowrap;
+            display: none;
+            margin: 0;
+        }
+
+        /* 3. Virtual Assistant Main Message */
+        .va-message {
+            text-align: center;
+            display: none; /* JS handles reveal */
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: -10vh;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .va-line {
+            font-size: clamp(1.8rem, 4vw, 3.5rem);
+            font-weight: 800;
+            color: transparent;
+            background: linear-gradient(90deg, #fff, var(--neon-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            opacity: 0; /* GSAP reveals */
+        }
+
+        .va-line.sub {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            font-weight: 500;
+            color: #e2e8f0;
+            background: none;
+            -webkit-text-fill-color: initial;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .va-line.highlight {
+            font-weight: 600;
+            color: var(--neon-cyan);
+            letter-spacing: 1px;
+            margin-top: 1rem;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+
+        /* 4. Interactive Options */
+        .options-container {
+            position: absolute;
+            bottom: 15%;
+            display: flex;
+            gap: 1.5rem;
+            opacity: 0; /* GSAP reveals */
+            z-index: 20;
+            pointer-events: auto; /* Enable clicks here */
+        }
+
+        .futuristic-btn {
+            position: relative;
+            padding: 1.25rem 2.5rem;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(0, 255, 255, 0.05); /* Glassmorphism base */
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            overflow: hidden;
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease, text-shadow 0.4s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Energy beam laser effect */
+        .futuristic-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 30%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.9), transparent);
+            transform: skewX(-25deg);
+            z-index: -1;
+            filter: blur(4px);
+        }
+
+        .futuristic-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.8), inset 0 0 20px rgba(0, 255, 255, 0.5);
+            border-color: var(--neon-cyan);
+            text-shadow: 0 0 8px #fff;
+        }
+
+        .futuristic-btn:hover::before {
+            animation: energy-beam 1.2s infinite ease-in-out;
+        }
+
+        @keyframes energy-beam {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        /* Spark Particles on Hover */
+        .spark {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            animation: spark-fly 0.6s ease-out forwards;
+        }
+
+        @keyframes spark-fly {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: var(--spark-dest) scale(0); opacity: 0; }
+        }
+
+        /* Meteor Streaks Background */
+        .meteor-streak {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(-45deg, rgba(0, 255, 255, 1), rgba(0, 255, 255, 0));
+            filter: drop-shadow(0 0 6px rgba(0, 255, 255, 1));
+            border-radius: 999px;
+            animation: tail 2500ms ease-in-out forwards, shooting 2500ms ease-in-out forwards;
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .meteor-streak::before {
+            content: '';
+            position: absolute;
+            top: calc(50% - 1px);
+            right: 0;
+            height: 2px;
+            width: 20px;
+            background: linear-gradient(-45deg, rgba(0, 0, 255, 0), rgba(0, 255, 255, 1), rgba(0, 0, 255, 0));
+            transform: translateX(50%) rotateZ(45deg);
+            border-radius: 100%;
+        }
+        
+        @keyframes tail {
+            0% { width: 0; }
+            30% { width: 150px; }
+            100% { width: 0; }
+        }
+        
+        @keyframes shooting {
+            0% { transform: translateX(0) translateY(0); opacity: 1; }
+            100% { transform: translateX(1000px) translateY(1000px); opacity: 0; }
+        }
+
+        /* Button Pulse */
+        @keyframes btn-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); }
+        }
+
+        /* Button Pulse Class */
+        .pulse-anim-btn {
+            animation: btn-pulse 2s infinite;
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-anim 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-anim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .options-container {
+                flex-direction: column;
+                gap: 1rem;
+                bottom: 8%;
+                width: 90%;
+            }
+            .futuristic-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .va-message {
+                margin-top: -15vh;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 3D Space Background (Three.js) -->
+    <div id="canvas-container"></div>
+    
+    <!-- 2. AI Neural Network (Particles.js) -->
+    <div id="particles-js"></div>
+    
+    <!-- 3. Holographic HUD Effects -->
+    <div class="ai-hud">
+        <div class="ai-grid"></div>
+        <div class="scanline"></div>
+    </div>
+
+    <!-- 4. UI Layer -->
+    <div class="ui-layer">
+        
+        <!-- Assistant Initialization Typing -->
+        <div class="boot-sequence" id="boot-text"></div>
+
+        <!-- Greeting -->
+        <h1 class="greeting-text" id="greeting"></h1>
+
+        <!-- Assistant Message -->
+        <div class="va-message" id="va-message">
+            <div class="va-line" id="va-l1"></div>
+            <div class="va-line" id="va-l1b"></div>
+            <div class="va-line sub" id="va-l2"></div>
+            <div class="va-line sub highlight" id="va-l3"></div>
+        </div>
+
+        <!-- Interactive Options -->
+        <div class="options-container" id="options">
+            <button class="futuristic-btn pulse-anim-btn">
+                <i class="fa-solid fa-globe"></i> Explore Cognix
+            </button>
+            <button class="futuristic-btn">
+                <i class="fa-solid fa-layer-group"></i> Explore Domain
+            </button>
+            <button class="futuristic-btn">
+                <i class="fa-solid fa-box-open"></i> Explore Packs
+            </button>
+        </div>
+
+    </div>
+
+    <!-- GSAP for Ultra-Smooth Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    
+    <!-- Three.js for 3D Space -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Particles.js for Neural Network -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(TextPlugin);
+
+            // ==========================================
+            // 1. THREE.JS 3D SPACE BACKGROUND
+            // ==========================================
+            const initThreeJS = () => {
+                const container = document.getElementById('canvas-container');
+                const scene = new THREE.Scene();
+                scene.fog = new THREE.FogExp2(0x03050a, 0.001); // Cosmic fog effect
+
+                const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+                camera.position.z = 1;
+                camera.rotation.x = Math.PI / 2; // Look "up" for hyperspace feel
+
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                container.appendChild(renderer.domElement);
+
+                // Create stars
+                const starGeo = new THREE.BufferGeometry();
+                const starCount = 4000;
+                const starArr = new Float32Array(starCount * 3);
+                const velocityArr = [];
+
+                for(let i=0; i < starCount * 3; i+=3) {
+                    starArr[i] = Math.random() * 600 - 300;   // x
+                    starArr[i+1] = Math.random() * 600 - 300; // y
+                    starArr[i+2] = Math.random() * 600 - 300; // z
+                    velocityArr.push(0);
+                }
+
+                starGeo.setAttribute('position', new THREE.BufferAttribute(starArr, 3));
+                const starMaterial = new THREE.PointsMaterial({
+                    color: 0x00ffff,
+                    size: 0.8,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                const stars = new THREE.Points(starGeo, starMaterial);
+                scene.add(stars);
+
+                // Parallax Mouse Interaction
+                let mouseX = 0;
+                let mouseY = 0;
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX - window.innerWidth/2) * 0.0003;
+                    mouseY = (e.clientY - window.innerHeight/2) * 0.0003;
+                });
+
+                const animateStars = () => {
+                    const positions = starGeo.attributes.position.array;
+                    for(let i=0; i<starCount; i++) {
+                        velocityArr[i] += 0.02; // Acceleration (warp speed effect)
+                        let y = i*3 + 1;
+                        positions[y] -= velocityArr[i];
+                        
+                        // Reset star if it passes camera
+                        if(positions[y] < -200) {
+                            positions[y] = 200;
+                            velocityArr[i] = 0;
+                        }
+                    }
+                    starGeo.attributes.position.needsUpdate = true;
+                    
+                    // Smooth parallax camera move
+                    camera.position.x += (mouseX - camera.position.x) * 0.05;
+                    camera.position.y += (-mouseY - camera.position.y) * 0.05;
+
+                    renderer.render(scene, camera);
+                    requestAnimationFrame(animateStars);
+                };
+                
+                animateStars();
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            };
+
+            initThreeJS();
+
+            // ==========================================
+            // 2. PARTICLES.JS NEURAL NETWORK
+            // ==========================================
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": { "value": 70, "density": { "enable": true, "value_area": 800 } },
+                    "color": { "value": "#00ffff" },
+                    "shape": { "type": "circle" },
+                    "opacity": { 
+                        "value": 0.5, 
+                        "random": true,
+                        "anim": { "enable": true, "speed": 1, "opacity_min": 0.1, "sync": false }
+                    },
+                    "size": { "value": 3, "random": true },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#00ffff", // Glowing nodes connection
+                        "opacity": 0.3,
+                        "width": 1.5
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1.5,
+                        "direction": "none",
+                        "random": true,
+                        "out_mode": "out",
+                        "attract": { "enable": true, "rotateX": 600, "rotateY": 1200 } // Network floating feel
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": { "enable": true, "mode": "grab" },
+                        "onclick": { "enable": true, "mode": "push" }
+                    },
+                    "modes": {
+                        "grab": { "distance": 180, "line_linked": { "opacity": 0.8 } }
+                    }
+                },
+                "retina_detect": true
+            });
+
+            // ==========================================
+            // 3. GSAP CINEMATIC ANIMATIONS
+            // ==========================================
+            
+            // Get Username
+            let rawName = localStorage.getItem('userName');
+            let userName = "User";
+            if (rawName && rawName.trim() !== "") {
+                // Get the first word/name to be friendly
+                userName = rawName.trim().split(" ")[0]; 
+            }
+
+            const bootText = document.getElementById("boot-text");
+            const greeting = document.getElementById("greeting");
+            const vaMessage = document.getElementById("va-message");
+            const options = document.getElementById("options");
+
+            // Main Timeline
+            const tl = gsap.timeline();
+
+            // Phase A: Typing Initialization
+            tl.to(bootText, { duration: 1.5, text: "Initializing Cognix AI...", ease: "none" })
+              .to(bootText, { duration: 0.5, opacity: 0, delay: 0.5 })
+              .set(bootText, { text: "" })
+              .to(bootText, { duration: 0.1, opacity: 1 })
+              .to(bootText, { duration: 1, text: "System Ready...", ease: "none" })
+              .to(bootText, { duration: 0.5, opacity: 0, delay: 0.5 })
+              .set(bootText, { display: "none" });
+
+            // Phase B: Giant User Greeting Pulse in Center
+            tl.set(greeting, { display: "block", text: `Hello ${userName}`, opacity: 0, scale: 0.8, xPercent: -50, yPercent: -50 })
+              .to(greeting, { duration: 2, opacity: 1, scale: 1, ease: "power2.out" })
+              
+              // Concurrent subtle pulse while it waits
+              .add(() => {
+                  gsap.to(greeting, { 
+                      scale: 1.05, 
+                      textShadow: "0 0 30px #0ff, 0 0 60px #0ff", 
+                      duration: 1.2, 
+                      yoyo: true, 
+                      repeat: 2, 
+                      ease: "sine.inOut" 
+                  });
+              })
+              
+              .to({}, { duration: 2.5 }) // Wait while pulsing
+              
+              // Smoothly shrink and move to top-left corner
+              .to(greeting, { 
+                  duration: 1.5,
+                  top: window.innerWidth < 768 ? "5%" : "40px", 
+                  left: window.innerWidth < 768 ? "5%" : "40px", 
+                  xPercent: 0, 
+                  yPercent: 0,
+                  x: 0, 
+                  y: 0, 
+                  scale: 0.4, 
+                  transformOrigin: "left top", 
+                  ease: "power3.inOut" 
+              });
+
+            // Phase C: Virtual Assistant Typing
+            tl.set(vaMessage, { display: "flex" })
+              .to("#va-l1", { duration: 0.6, text: "Welcome to", ease: "none", opacity: 1 })
+              .to("#va-l1b", { duration: 1.2, text: "the world of Cognix AI", ease: "none", opacity: 1 })
+              .to("#va-l2", { duration: 1, text: "I'm your Virtual Assistant!", ease: "none", opacity: 1 })
+              .to("#va-l3", { duration: 1, text: "Please choose the option to explore!", ease: "none", opacity: 1 });
+
+            // Phase D: Buttons Reveal Stagger
+            tl.to(options, { duration: 0.5, opacity: 1, ease: "power2.out" })
+              .from(".futuristic-btn", { 
+                  duration: 0.8, 
+                  y: 50, 
+                  opacity: 0, 
+                  stagger: 0.2, 
+                  ease: "back.out(1.5)" 
+              }, "-=0.2")
+              .to(".futuristic-btn", {
+                  boxShadow: "0 0 40px rgba(0, 255, 255, 1), inset 0 0 20px rgba(0, 255, 255, 0.6)",
+                  duration: 0.3,
+                  yoyo: true,
+                  repeat: 1,
+                  stagger: 0.2
+              }, "-=0.5");
+
+
+            // ==========================================
+            // 4. BUTTON RIPPLE EFFECT & SPARKS
+            // ==========================================
+            const buttons = document.querySelectorAll('.futuristic-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    let x = e.clientX - e.target.getBoundingClientRect().left;
+                    let y = e.clientY - e.target.getBoundingClientRect().top;
+
+                    let ripples = document.createElement('span');
+                    ripples.classList.add('ripple');
+                    ripples.style.left = x + 'px';
+                    ripples.style.top = y + 'px';
+                    this.appendChild(ripples);
+
+                    setTimeout(() => ripples.remove(), 600);
+                });
+
+                // Sparkles on hover
+                let sparkInterval;
+                btn.addEventListener('mouseenter', function() {
+                    const rect = this.getBoundingClientRect();
+                    sparkInterval = setInterval(() => {
+                        let spark = document.createElement('span');
+                        spark.classList.add('spark');
+                        spark.style.left = Math.random() * rect.width + 'px';
+                        spark.style.top = Math.random() * rect.height + 'px';
+                        
+                        let destX = (Math.random() - 0.5) * 80;
+                        let destY = (Math.random() - 0.5) * 80;
+                        spark.style.setProperty('--spark-dest', `translate(${destX}px, ${destY}px)`);
+                        
+                        this.appendChild(spark);
+                        setTimeout(() => spark.remove(), 800);
+                    }, 100);
+                });
+                btn.addEventListener('mouseleave', function() {
+                    clearInterval(sparkInterval);
+                });
+            });
+
+            // ==========================================
+            // 5. METEOR STREAKS GENERATOR
+            // ==========================================
+            const createMeteor = () => {
+                const meteor = document.createElement("div");
+                meteor.classList.add("meteor-streak");
+                
+                meteor.style.left = `${Math.random() * window.innerWidth}px`;
+                meteor.style.top = `${-100 + Math.random() * (window.innerHeight / 2)}px`;
+                
+                let angle = 20 + Math.random() * 40;
+                meteor.style.transform = `rotate(${angle}deg)`;
+                
+                document.getElementById('canvas-container').appendChild(meteor);
+                
+                setTimeout(() => meteor.remove(), 2500);
+            };
+            
+            const scheduleMeteors = () => {
+                createMeteor();
+                setTimeout(scheduleMeteors, 800 + Math.random() * 3000);
+            };
+            setTimeout(scheduleMeteors, 2000);
+
+        });
+    </script>
+</body>
+</html>

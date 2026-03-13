@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Course Demo</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="assets/favicon.png">
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body class="success-page">
+
+    <!-- Background Elements -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <header class="site-header">
+        <a href="index.html" class="logo-wrapper">
+            <img src="assets/logo.png" alt="Alfrah Cognix Logo" class="logo">
+        </a>
+    </header>
+
+    <main class="success-container">
+        <!-- Success Popup -->
+        <div class="popup-overlay" id="successPopup">
+            <div class="popup-content">
+                <i class="fa-solid fa-circle-check success-icon"></i>
+                <h2 class="popup-title">Payment Successful!</h2>
+                <p class="form-subtitle">Your enrollment has been confirmed.</p>
+                <div style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> Preparing your course video...
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Section -->
+        <div class="video-container" id="videoContainer">
+            <h2 class="form-title">Course Overview</h2>
+            <h3 class="course-title" id="courseNameDisplay">Loading...</h3>
+            
+            <div class="video-wrapper">
+                <video id="courseVideo" controls>
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <a href="index.html" class="primary-btn home-btn">
+                <i class="fa-solid fa-home"></i> Back to Home
+            </a>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve selected course from localStorage
+            const selectedCourse = localStorage.getItem('selectedCourse') || 'AI';
+            const courseDisplay = document.getElementById('courseNameDisplay');
+            const videoElement = document.getElementById('courseVideo');
+            const sourceElement = videoElement.querySelector('source');
+            
+            // Map known courses to video files based on directory contents
+            // Defaulting to ai_demo.mp4 if no specific mapping matches
+            const videoMap = {
+                'AI': 'assets/ai_demo.mp4',
+                'AWS': 'assets/aws_demo.mp4',
+                'UI/UX Design': 'assets/ui_ux_demo.mp4',
+                // Fallbacks using existing videos for other courses
+                'Data Analytics': 'assets/ai_demo.mp4',
+                'Full Stack': 'assets/ui_ux_demo.mp4',
+                'Cyber Security': 'assets/aws_demo.mp4',
+                'Auto CAD': 'assets/ui_ux_demo.mp4',
+                'IoT & Robotics': 'assets/ai_demo.mp4',
+                'Embedded System': 'assets/ai_demo.mp4',
+                'VLSI Design': 'assets/aws_demo.mp4',
+                'Digital Marketing': 'assets/ui_ux_demo.mp4',
+                'HR': 'assets/ai_demo.mp4'
+            };
+            
+            let videoFile = videoMap[selectedCourse] || 'assets/ai_demo.mp4';
+            
+            // Set the UI titles
+            courseDisplay.textContent = `${selectedCourse} Masterclass`;
+            
+            // Load the correct video
+            sourceElement.src = videoFile;
+            videoElement.load();
+            
+            // Handle Popup Fade Out and Video Play
+            setTimeout(() => {
+                const popup = document.getElementById('successPopup');
+                const videoCont = document.getElementById('videoContainer');
+                
+                popup.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                    videoCont.classList.add('show');
+                    
+                    // Attempt to autoplay the video once the popup is gone
+                    const playPromise = videoElement.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("Autoplay prevented. User interaction required.");
+                        });
+                    }
+                }, 500); // Wait for fade-out transition
+                
+            }, 3000); // Show popup for 3 seconds before transitioning
+        });
+    </script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true });
+    </script>
+</body>
+
+</html>
