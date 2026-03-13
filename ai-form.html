@@ -2,155 +2,208 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Enrollment Form</title>
-    <!-- Favicon -->
-    <link rel="shortcut icon" type="image/png" href="assets/favicon.png">
-    <!-- Google Fonts: Outfit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Enrollment Form</title>
+
+<link rel="shortcut icon" type="image/png" href="assets/favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
 </head>
 
 <body class="form-page">
 
-    <!-- Background Elements -->
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
+<div class="glow-orb orb-1"></div>
+<div class="glow-orb orb-2"></div>
 
-    <header class="site-header">
-        <a href="index.html" class="logo-wrapper">
-            <img src="assets/logo.png" alt="Alfrah Cognix Logo" class="logo">
-        </a>
-    </header>
+<header class="site-header">
+<a href="index.html" class="logo-wrapper">
+<img src="assets/logo.png" alt="Alfrah Cognix Logo" class="logo">
+</a>
+</header>
 
-    <main class="form-container">
-        <a href="index.html" class="back-link" data-aos="fade-right"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+<main class="form-container">
 
-        <div class="form-glass-card" data-aos="fade-up" data-aos-duration="800">
-            <h2 class="form-title">Register for Cognix Ai</h2>
-            <p class="form-subtitle">Fill in your details to secure your spot.</p>
+<a href="index.html" class="back-link" data-aos="fade-right">
+<i class="fa-solid fa-arrow-left"></i> Back to Home
+</a>
 
-            <form action="#" method="POST" id="enrollmentForm">
+<div class="form-glass-card" data-aos="fade-up" data-aos-duration="800">
 
-                <div class="input-group">
-                    <label for="fullName">Full Name</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-user icon"></i>
-                        <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
-                    </div>
-                </div>
+<h2 class="form-title">Register for Cognix Ai</h2>
+<p class="form-subtitle">Fill in your details to secure your spot.</p>
 
-                <div class="input-group">
-                    <label for="phone">Phone Number</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-phone icon"></i>
-                        <input type="tel" id="phone" name="phone" placeholder="+1 234 567 8900" required>
-                    </div>
-                </div>
+<form id="enrollmentForm">
 
-                <div class="input-group">
-                    <label>Domain</label>
-                    <div class="input-icon-wrapper custom-select-wrapper">
-                        <i class="fa-solid fa-laptop-code icon"></i>
+<div class="input-group">
+<label for="fullName">Full Name</label>
+<div class="input-icon-wrapper">
+<i class="fa-solid fa-user icon"></i>
+<input type="text" id="fullName" name="fullname" placeholder="John Doe" required>
+</div>
+</div>
 
-                        <!-- Custom Select Structure -->
-                        <div class="custom-select" id="domainSelect">
-                            <div class="custom-select-trigger">
-                                <span class="custom-select-text">Choose a domain</span>
-                                <i class="fa-solid fa-chevron-down dropdown-icon"></i>
-                            </div>
+<div class="input-group">
+<label for="phone">Phone Number</label>
+<div class="input-icon-wrapper">
+<i class="fa-solid fa-phone icon"></i>
+<input type="tel" id="phone" name="phone" placeholder="+1 234 567 8900" required>
+</div>
+</div>
 
-                            <div class="custom-options-container">
-                                <div class="custom-option" data-value="AI">
-                                    <i class="fa-solid fa-brain option-icon"></i>
-                                    <span>Artificial Intelligence (AI)</span>
-                                </div>
-                                <div class="custom-option" data-value="Data Analytics">
-                                    <i class="fa-solid fa-chart-line option-icon"></i>
-                                    <span>Data Analytics</span>
-                                </div>
-                                <div class="custom-option" data-value="UI/UX Design">
-                                    <i class="fa-solid fa-pen-nib option-icon"></i>
-                                    <span>UI/UX Design</span>
-                                </div>
-                                <div class="custom-option" data-value="Full Stack">
-                                    <i class="fa-solid fa-code option-icon"></i>
-                                    <span>Full Stack Development</span>
-                                </div>
-                                <div class="custom-option" data-value="AWS">
-                                    <i class="fa-brands fa-aws option-icon"></i>
-                                    <span>Amazon Web Services (AWS)</span>
-                                </div>
-                                <div class="custom-option" data-value="Cyber Security">
-                                    <i class="fa-solid fa-shield-halved option-icon"></i>
-                                    <span>Cyber Security</span>
-                                </div>
-                                <div class="custom-option" data-value="Auto CAD">
-                                    <i class="fa-solid fa-compass option-icon"></i>
-                                    <span>Auto CAD</span>
-                                </div>
-                                <div class="custom-option" data-value="IoT & Robotics">
-                                    <i class="fa-solid fa-robot option-icon"></i>
-                                    <span>IoT & Robotics</span>
-                                </div>
-                                <div class="custom-option" data-value="Embedded System">
-                                    <i class="fa-solid fa-microchip option-icon"></i>
-                                    <span>Embedded System</span>
-                                </div>
-                                <div class="custom-option" data-value="VLSI Design">
-                                    <i class="fa-solid fa-memory option-icon"></i>
-                                    <span>VLSI Design</span>
-                                </div>
-                                <div class="custom-option" data-value="Digital Marketing">
-                                    <i class="fa-solid fa-bullhorn option-icon"></i>
-                                    <span>Digital Marketing</span>
-                                </div>
-                                <div class="custom-option" data-value="HR">
-                                    <i class="fa-solid fa-users option-icon"></i>
-                                    <span>Human Resources (HR)</span>
-                                </div>
-                            </div>
-                        </div>
+<div class="input-group">
+<label for="domain">Domain</label>
 
-                        <!-- Hidden native select for form submission -->
-                        <select id="domain" name="domain" required class="hidden-select" aria-label="Select Domain">
-                            <option value="" disabled selected>Choose a domain</option>
-                            <option value="AI">Artificial Intelligence (AI)</option>
-                            <option value="Data Analytics">Data Analytics</option>
-                            <option value="UI/UX Design">UI/UX Design</option>
-                            <option value="Full Stack">Full Stack Development</option>
-                            <option value="AWS">Amazon Web Services (AWS)</option>
-                            <option value="Cyber Security">Cyber Security</option>
-                            <option value="Auto CAD">Auto CAD</option>
-                            <option value="IoT & Robotics">IoT & Robotics</option>
-                            <option value="Embedded System">Embedded System</option>
-                            <option value="VLSI Design">VLSI Design</option>
-                            <option value="Digital Marketing">Digital Marketing</option>
-                            <option value="HR">Human Resources (HR)</option>
-                        </select>
-                    </div>
-                </div>
+<div class="input-icon-wrapper custom-select-wrapper">
 
-                <button type="submit" class="submit-btn">
-                    <span>Cognix Ai</span> <i class="fa-solid fa-arrow-right"></i>
-                </button>
+<i class="fa-solid fa-laptop-code icon"></i>
 
-            </form>
-        </div>
-    </main>
+<!-- Custom Select Structure -->
+<div class="custom-select" id="domainSelect">
+<div class="custom-select-trigger">
+<span class="custom-select-text">Choose a domain</span>
+<i class="fa-solid fa-chevron-down dropdown-icon"></i>
+</div>
 
-    <script src="js/script.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({ once: true });
-    </script>
+<div class="custom-options-container">
+<div class="custom-option" data-value="AI">
+<i class="fa-solid fa-brain option-icon"></i>
+<span>Artificial Intelligence (AI)</span>
+</div>
+<div class="custom-option" data-value="Data Analytics">
+<i class="fa-solid fa-chart-line option-icon"></i>
+<span>Data Analytics</span>
+</div>
+<div class="custom-option" data-value="UI/UX Design">
+<i class="fa-solid fa-pen-nib option-icon"></i>
+<span>UI/UX Design</span>
+</div>
+<div class="custom-option" data-value="Full Stack">
+<i class="fa-solid fa-code option-icon"></i>
+<span>Full Stack Development</span>
+</div>
+<div class="custom-option" data-value="AWS">
+<i class="fa-brands fa-aws option-icon"></i>
+<span>Amazon Web Services (AWS)</span>
+</div>
+<div class="custom-option" data-value="Cyber Security">
+<i class="fa-solid fa-shield-halved option-icon"></i>
+<span>Cyber Security</span>
+</div>
+<div class="custom-option" data-value="Auto CAD">
+<i class="fa-solid fa-compass option-icon"></i>
+<span>Auto CAD</span>
+</div>
+<div class="custom-option" data-value="IoT & Robotics">
+<i class="fa-solid fa-robot option-icon"></i>
+<span>IoT & Robotics</span>
+</div>
+<div class="custom-option" data-value="Embedded System">
+<i class="fa-solid fa-microchip option-icon"></i>
+<span>Embedded System</span>
+</div>
+<div class="custom-option" data-value="VLSI Design">
+<i class="fa-solid fa-memory option-icon"></i>
+<span>VLSI Design</span>
+</div>
+<div class="custom-option" data-value="Digital Marketing">
+<i class="fa-solid fa-bullhorn option-icon"></i>
+<span>Digital Marketing</span>
+</div>
+<div class="custom-option" data-value="HR">
+<i class="fa-solid fa-users option-icon"></i>
+<span>Human Resources (HR)</span>
+</div>
+</div>
+</div>
+
+<select id="domain" name="domain" required class="hidden-select" aria-label="Select Domain">
+<option value="" disabled selected>Choose a domain</option>
+<option value="AI">Artificial Intelligence (AI)</option>
+<option value="Data Analytics">Data Analytics</option>
+<option value="UI/UX Design">UI/UX Design</option>
+<option value="Full Stack">Full Stack Development</option>
+<option value="AWS">Amazon Web Services (AWS)</option>
+<option value="Cyber Security">Cyber Security</option>
+<option value="Auto CAD">Auto CAD</option>
+<option value="IoT & Robotics">IoT & Robotics</option>
+<option value="Embedded System">Embedded System</option>
+<option value="VLSI Design">VLSI Design</option>
+<option value="Digital Marketing">Digital Marketing</option>
+<option value="HR">Human Resources (HR)</option>
+</select>
+
+</div>
+</div>
+
+<button type="submit" class="submit-btn">
+<span>Cognix Ai</span> <i class="fa-solid fa-arrow-right"></i>
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+<script src="js/script.js"></script>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+AOS.init({ once: true });
+</script>
+
+<!-- Google Sheet Form Connection -->
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbwYHZYPhsMFqNKrojFNdwrYDPNWsld6VIobvyf6iGONZvf-K0ZlW3GT3vf3wX3aAtuHsQ/exec";
+
+const form = document.getElementById("enrollmentForm");
+
+form.addEventListener("submit", function(e){
+
+e.preventDefault();
+
+const formData = {
+fullname: document.getElementById("fullName").value,
+phone: document.getElementById("phone").value,
+domain: document.getElementById("domain").value
+};
+
+fetch(scriptURL,{
+method:"POST",
+body:JSON.stringify(formData)
+})
+
+.then(response => {
+
+alert("Registration Successful 🚀");
+
+form.reset();
+
+/* Redirect to Cognix AI Page */
+
+window.location.href = "cognix-ai.html?name=" + encodeURIComponent(formData.fullname);
+
+})
+
+.catch(error => console.error("Error!",error));
+
+});
+
+</script>
+
 </body>
-
 </html>
