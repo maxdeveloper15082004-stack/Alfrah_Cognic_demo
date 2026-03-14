@@ -39,10 +39,10 @@
   box-sizing: border-box;
 }
 
-html, body {
+/* Root — NO overflow or width constraints. Setting overflow on html blocks page scroll. */
+html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
-  max-width: 100vw;
+  background-color: var(--bg-darker);
 }
 
 body {
@@ -50,7 +50,9 @@ body {
   background-color: var(--bg-darker);
   color: var(--text-primary);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: hidden;  /* horizontal only — on body this is safe */
+  overflow-y: auto;    /* always allow vertical scroll */
+  max-width: 100%;     /* prevent body from exceeding screen width */
   position: relative;
   line-height: 1.6;
   display: flex;
@@ -326,9 +328,8 @@ main {
   justify-content: center;
   align-items: center;
   gap: 3rem;
-  perspective: 1000px;
+  perspective: 1000px;   /* 3D perspective only meaningful on desktop */
   width: 100%;
-  margin-top: -3rem;
 }
 
 .hero-image-wrapper .cta-wrapper {
@@ -828,10 +829,25 @@ main {
 
   .cta-wrapper {
     align-items: center;
+    width: 100%;
   }
 
+  /* ✅ Fix: Remove 3D perspective + rotation that causes horizontal overflow (orange background) */
   .hero-image-wrapper {
-    margin-top: 2rem;
+    margin-top: 2rem;        /* Positive margin — no overlap */
+    perspective: none;       /* Kill 3D perspective */
+    gap: 1.5rem;
+  }
+
+  .glass-preview {
+    transform: none !important;   /* Flat card on mobile — no rotateY/rotateX overflow */
+    max-width: 100%;              /* Full container width */
+    width: 100%;
+  }
+
+  /* Disable hover 3D reset on mobile (no hover on touch) */
+  .hero-image-wrapper:hover .glass-preview {
+    transform: none !important;
   }
 }
 

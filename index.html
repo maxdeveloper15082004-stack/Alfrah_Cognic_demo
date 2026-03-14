@@ -52,10 +52,23 @@
                 </div>
             </div>
 
+            <!-- ✅ CTA buttons moved here so they appear right after features on mobile -->
+            <div class="cta-wrapper" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+                <div class="buttons-group">
+                    <a href="form.html" class="primary-btn pulse-anim">
+                        <i class="fa-solid fa-graduation-cap"></i> Get Demo Class
+                    </a>
+                    <a href="ai-form.html" class="primary-btn pulse-anim">
+                        <i class="fa-solid fa-robot"></i> Cognix AI
+                    </a>
+                </div>
+                <p class="sub-text">Limited spots available for the upcoming batch.</p>
+            </div>
+
         </div>
 
         <div class="hero-image-wrapper">
-            <!-- A decorative glassmorphism card to represent the platform -->
+            <!-- Decorative glassmorphism stats card -->
             <div class="glass-preview" data-aos="zoom-in-left" data-aos-delay="500" data-aos-duration="1000">
                 <div class="preview-header">
                     <div class="dots">
@@ -90,27 +103,15 @@
                     </div>
                 </div>
             </div>
-
-            <div class="cta-wrapper" data-aos="fade-up" data-aos-delay="600" data-aos-duration="1000">
-                <div class="buttons-group">
-                    <a href="form.html" class="primary-btn pulse-anim">
-                        <i class="fa-solid fa-graduation-cap"></i> Get Demo Class
-                    </a>
-                    <a href="ai-form.html" class="primary-btn pulse-anim">
-                        <i class="fa-solid fa-robot"></i> Cognix AI
-                    </a>
-                </div>
-                <p class="sub-text">Limited spots available for the upcoming batch.</p>
-            </div>
         </div>
     </main>
 
-    <!-- AOS Animation Script -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
-            once: true, // whether animation should happen only once - while scrolling down
-            offset: 50, // offset (in px) from the original trigger point
+            once: true,   // animate only once (no re-trigger on scroll up)
+            offset: 0,    // trigger immediately when element enters viewport (fixes mobile hidden elements)
+            duration: 800
         });
     </script>
 </body>
