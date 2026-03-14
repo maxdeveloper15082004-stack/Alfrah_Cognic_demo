@@ -370,7 +370,7 @@
                 flex-direction: column;
                 align-items: center;
                 gap: 1rem;
-                bottom: 12%; /* Pulled upward significantly to avoid phone taskbar overlap */
+                bottom: 12%;
                 width: 90%;
                 left: 50%;
                 transform: translateX(-50%);
@@ -378,7 +378,7 @@
             .futuristic-btn {
                 width: 100%;
                 justify-content: center;
-                padding: 1rem 1.5rem; /* Slimmed down height slightly so all 3 fit nicely */
+                padding: 1rem 1.5rem;
             }
             .va-message {
                 margin-top: -15vh;
@@ -574,7 +574,23 @@
             // ==========================================
             // 3. GSAP CINEMATIC ANIMATIONS
             // ==========================================
-            
+
+            // ── Background Google Sheets submission ──────────────────────────
+            // ai-form.html navigated here synchronously so this fetch is safe
+            // to run in the background without affecting the user experience.
+            (function submitPendingForm() {
+                try {
+                    const raw = sessionStorage.getItem('pendingSubmit');
+                    if (!raw) return;
+                    sessionStorage.removeItem('pendingSubmit');
+                    const { scriptURL, formData } = JSON.parse(raw);
+                    if (scriptURL && formData) {
+                        fetch(scriptURL, { method: 'POST', body: JSON.stringify(formData) })
+                            .catch(() => {}); // silent fail — non-critical
+                    }
+                } catch(e) {}
+            })();
+
             // Get Username
             let rawName = localStorage.getItem('userName');
             let userName = "User";
@@ -588,7 +604,66 @@
             const vaMessage = document.getElementById("va-message");
             const options = document.getElementById("options");
 
-            // Main Timeline
+            // ==========================================
+            // VOICE CONTROLLER (Web Speech API)
+            // ==========================================
+            //
+            // WHY THIS WORKS: ai-form.html now navigates to this page
+            // SYNCHRONOUSLY (no await/fetch before window.location.href).
+            // Chrome therefore transfers "user activation" to this page,
+            // so speechSynthesis.speak() works immediately on load — no
+            // overlay, no click required.
+            // ─────────────────────────────────────────────────────────────
+
+            // Step 1: Prime the engine NOW (activation is live from sync nav)
+            (function primeSpeech() {
+                try {
+                    const p = new SpeechSynthesisUtterance('');
+                    p.volume = 0;
+                    p.rate   = 10;
+                    window.speechSynthesis.speak(p);
+                } catch(e) {}
+            })();
+
+            // Step 2: Cache voices (async in Chrome, populated after primer)
+            let cachedVoices = [];
+            const refreshVoices = () => { cachedVoices = window.speechSynthesis.getVoices(); };
+            refreshVoices();
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = refreshVoices;
+            }
+
+            // Step 3: Pick the clearest AI-sounding English voice available
+            const getPreferredVoice = () => {
+                const pool = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
+                return (
+                    pool.find(v => v.name === 'Google US English')           // Chrome  ✔ crisp
+                    || pool.find(v => v.name === 'Microsoft Zira Desktop')   // Windows ✔ clear female
+                    || pool.find(v => v.name === 'Microsoft David Desktop')  // Windows ✔ clear male
+                    || pool.find(v => v.name.includes('Google') && v.lang.startsWith('en'))
+                    || pool.find(v => v.name.includes('Zira'))
+                    || pool.find(v => v.name.includes('David'))
+                    || pool.find(v => v.lang === 'en-US')
+                    || pool.find(v => v.lang.startsWith('en'))
+                    || null
+                );
+            };
+
+            // Step 4: speak() — cancel existing then queue new after 80ms gap
+            const speak = (text, opts = {}) => {
+                window.speechSynthesis.cancel();
+                setTimeout(() => {
+                    const utter = new SpeechSynthesisUtterance(text);
+                    utter.rate   = opts.rate   !== undefined ? opts.rate   : 0.9;
+                    utter.pitch  = opts.pitch  !== undefined ? opts.pitch  : 1.0;
+                    utter.volume = 1.0;
+                    const voice = getPreferredVoice();
+                    if (voice) utter.voice = voice;
+                    window.speechSynthesis.speak(utter);
+                }, 80);
+            };
+
+            // Main Timeline — starts immediately
             const tl = gsap.timeline();
 
             // Phase A: Typing Initialization
@@ -602,7 +677,11 @@
 
             // Phase B: Giant User Greeting Pulse in Center
             tl.set(greeting, { display: "block", text: `Hello ${userName}`, opacity: 0, scale: 0.8, xPercent: -50, yPercent: -50 })
-              .to(greeting, { duration: 2, opacity: 1, scale: 1, ease: "power2.out" })
+              // 🔊 Fires exactly when the greeting fades in — clear AI voice, measured pace
+              .to(greeting, {
+                  duration: 2, opacity: 1, scale: 1, ease: "power2.out",
+                  onStart: () => speak(`Hello, ${userName}`, { rate: 0.88, pitch: 1.0 })
+              })
               
               // Concurrent subtle pulse while it waits
               .add(() => {
@@ -633,11 +712,15 @@
               });
 
             // Phase C: Virtual Assistant Typing
+            // 🔊 Slow, smooth AI voice fires at the exact start of the welcome text typing
             tl.set(vaMessage, { display: "flex" })
-              .to("#va-l1", { duration: 0.6, text: "Welcome to", ease: "none", opacity: 1 })
+              .to("#va-l1", {
+                  duration: 0.6, text: "Welcome to", ease: "none", opacity: 1,
+                  onStart: () => speak("Welcome to the world of Cognix AI", { rate: 0.68, pitch: 0.95 })
+              })
               .to("#va-l1b", { duration: 1.2, text: "the world of Cognix AI", ease: "none", opacity: 1 })
-              .to("#va-l2", { duration: 1, text: "I'm your Virtual Assistant!", ease: "none", opacity: 1 })
-              .to("#va-l3", { duration: 1, text: "Please choose the option to explore!", ease: "none", opacity: 1 });
+              .to("#va-l2",  { duration: 1,   text: "I'm your Virtual Assistant!",            ease: "none", opacity: 1 })
+              .to("#va-l3",  { duration: 1,   text: "Please choose the option to explore!",    ease: "none", opacity: 1 });
 
             // Phase D: Completion state checking and Buttons Reveal Stagger
             

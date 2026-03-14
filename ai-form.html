@@ -177,31 +177,31 @@ phone: document.getElementById("phone").value,
 domain: document.getElementById("domain").value
 };
 
-fetch(scriptURL,{
-method:"POST",
-body:JSON.stringify(formData)
-})
+// ── KEY FIX ──────────────────────────────────────────────────────────────
+// Chrome transfers "user activation" to the NEW page ONLY when navigation
+// happens synchronously inside the click handler (before any async call).
+// So we: 1) store form data in sessionStorage, 2) navigate NOW (sync),
+// 3) let cognix-ai.html submit to Google Sheets in the background.
+// This guarantees speechSynthesis works on the next page with no overlay.
+// ─────────────────────────────────────────────────────────────────────────
 
-.then(response => {
-
-// Reset domain completion state for new form submission
+// Reset completed flags
 localStorage.removeItem('domainCompleted');
 localStorage.removeItem('cognixCompleted');
 localStorage.removeItem('packsCompleted');
 
-// Store latest user info to localStorage
+// Store user info immediately
 localStorage.setItem('userName', formData.fullname);
 localStorage.setItem('selectedCourse', formData.domain);
 
-form.reset();
+// Save form payload for background submission on cognix-ai.html
+sessionStorage.setItem('pendingSubmit', JSON.stringify({
+    scriptURL: scriptURL,
+    formData:  formData
+}));
 
-/* Redirect to Cognix AI Page */
-
+// ✅ Navigate SYNCHRONOUSLY — user activation transfers to cognix-ai.html
 window.location.href = "cognix-ai.html?name=" + encodeURIComponent(formData.fullname) + "&domain=" + encodeURIComponent(formData.domain);
-
-})
-
-.catch(error => console.error("Error!",error));
 
 });
 
