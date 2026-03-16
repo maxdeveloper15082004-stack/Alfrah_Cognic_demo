@@ -117,12 +117,25 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            pointer-events: none; /* Let clicks pass through unclickable areas */
+        }
+
+        /* Hero Content Container */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            pointer-events: none; /* Let clicks pass through unclickable areas */
+            pointer-events: none;
         }
 
         /* 1. Virtual Assistant Boot Phase */
@@ -155,6 +168,7 @@
             white-space: nowrap;
             display: none;
             margin: 0;
+            padding-left: 20px;
         }
 
         /* 3. Virtual Assistant Main Message */
@@ -387,8 +401,10 @@
 
         /* Completion Section Styles */
         .completion-section {
-            position: relative;
-            margin-top: 3rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             text-align: center;
             z-index: 20;
             display: none;
@@ -398,6 +414,8 @@
             align-items: center;
             justify-content: center;
             transition: opacity 0.7s ease;
+            padding-top: 12rem;
+            margin-bottom: 50px;
         }
 
         .completion-section.show {
@@ -414,9 +432,16 @@
             gap: 2rem;
         }
 
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .explore-cognix-btn {
-            padding: 1.25rem 2.5rem;
-            font-size: 1.2rem;
+            padding: 0.875rem 1.75rem;
+            font-size: 1rem;
             font-family: 'Rajdhani', sans-serif;
             font-weight: 700;
             color: #fff;
@@ -449,9 +474,24 @@
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
         }
 
+        .whatsapp-btn {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--neon-cyan);
+            backdrop-filter: blur(8px);
+        }
+
+        .whatsapp-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
         .social-container {
             opacity: 0;
             transform: translateY(20px);
+            margin-top: 2rem;
         }
 
         .social-container.animate-in {
@@ -493,8 +533,8 @@
             color: var(--neon-cyan);
             font-size: 1.2rem;
             transition: all 0.3s ease;
-            opacity: 0;
-            transform: scale(0.8);
+            opacity: 1;
+            transform: scale(1);
         }
 
         .social-icon.animate-in {
@@ -517,14 +557,25 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .hero-content {
+                padding: 0 1rem;
+            }
+            
             .completion-section {
-                margin-top: 2rem;
-                width: 90%;
+                width: 100%;
+                padding: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
             }
             
             .explore-cognix-btn {
-                padding: 1rem 2rem;
-                font-size: 1rem;
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+                width: 100%;
             }
             
             .social-icons {
@@ -539,6 +590,12 @@
             
             .social-title {
                 font-size: 1.2rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .button-group {
+                margin-top: 40px;
             }
         }
 
@@ -581,40 +638,49 @@
     <!-- 4. UI Layer -->
     <div class="ui-layer">
         
-        <!-- Assistant Initialization Typing -->
-        <div class="boot-sequence" id="boot-text"></div>
+        <!-- Hero Content Container -->
+        <div class="hero-content">
+            <!-- Assistant Initialization Typing -->
+            <div class="boot-sequence" id="boot-text"></div>
 
-        <!-- Greeting -->
-        <h1 class="greeting-text" id="greeting"></h1>
+            <!-- Greeting -->
+            <h1 class="greeting-text" id="greeting"></h1>
 
-        <!-- Assistant Message -->
-        <div class="va-message" id="va-message">
-            <div class="va-line" id="va-l1"></div>
-            <div class="va-line" id="va-l1b"></div>
-            <div class="va-line sub" id="va-l2"></div>
-            <div class="va-line sub highlight" id="va-l3"></div>
-        </div>
+            <!-- Assistant Message -->
+            <div class="va-message" id="va-message">
+                <div class="va-line" id="va-l1"></div>
+                <div class="va-line" id="va-l1b"></div>
+                <div class="va-line sub" id="va-l2"></div>
+                <div class="va-line sub highlight" id="va-l3"></div>
+            </div>
 
-        <!-- Interactive Options -->
-        <div class="options-container" id="options">
-            <button class="futuristic-btn pulse-anim-btn" id="btn-explore-cognix">
-                <i class="fa-solid fa-globe"></i> Explore Cognix
-            </button>
-            <button class="futuristic-btn" id="btn-explore-domain">
-                <i class="fa-solid fa-layer-group"></i> Explore Domain
-            </button>
-            <button class="futuristic-btn" id="btn-explore-packs">
-                <i class="fa-solid fa-box-open"></i> Explore Packs
-            </button>
+            <!-- Interactive Options -->
+            <div class="options-container" id="options">
+                <button class="futuristic-btn pulse-anim-btn" id="btn-explore-cognix">
+                    <i class="fa-solid fa-globe"></i> Explore Cognix
+                </button>
+                <button class="futuristic-btn" id="btn-explore-domain">
+                    <i class="fa-solid fa-layer-group"></i> Explore Domain
+                </button>
+                <button class="futuristic-btn" id="btn-explore-packs">
+                    <i class="fa-solid fa-box-open"></i> Explore Packs
+                </button>
+            </div>
         </div>
 
         <!-- Completion Section (Hidden Initially) -->
         <div class="completion-section" id="completion-section" style="display: none;">
             <div class="completion-content">
-                <button class="explore-cognix-btn" id="explore-cognix-site-btn">
-                    <i class="fa-solid fa-rocket"></i>
-                    Explore Cognix Site
-                </button>
+                <div class="button-group">
+                    <button class="explore-cognix-btn" id="explore-cognix-site-btn">
+                        <i class="fa-solid fa-rocket"></i>
+                        Explore Cognix Site
+                    </button>
+                    <button class="explore-cognix-btn whatsapp-btn" id="explore-cognix-whatsapp-btn">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        Connect with WhatsApp
+                    </button>
+                </div>
                 
                 <div class="social-container">
                     <h3 class="social-title">Social Media</h3>
@@ -1142,9 +1208,12 @@
                 const options = document.getElementById('options');
                 const completionSection = document.getElementById('completion-section');
                 const exploreBtn = document.getElementById('explore-cognix-site-btn');
+                const exploreWhatsappBtn = document.getElementById('explore-cognix-whatsapp-btn');
                 const socialContainer = document.querySelector('.social-container');
                 const socialTitle = document.querySelector('.social-title');
                 const socialIcons = document.querySelectorAll('.social-icon');
+                
+                if (!options || !completionSection) return;
                 
                 // STEP 1: Fade out buttons
                 gsap.to(options, {
@@ -1156,42 +1225,22 @@
                         
                         // STEP 2: Wait 0.5s, then show completion section
                         setTimeout(() => {
-                            if (completionSection) {
-                                completionSection.style.display = "flex";
-                                completionSection.style.opacity = "1";
-                                completionSection.style.pointerEvents = "auto";
-                                completionSection.classList.add("show");
-                                
-                                // Ensure all elements start hidden for animation
-                                gsap.set(exploreBtn, { opacity: 0, scale: 0 });
-                                gsap.set(socialContainer, { opacity: 0 });
-                                gsap.set(socialIcons, { opacity: 0, y: 20 });
-                                
-                                // STEP 3: Animate "Explore Cognix Site" button (0.7s scale animation)
-                                gsap.to(exploreBtn, {
-                                    duration: 0.7,
-                                    opacity: 1,
-                                    scale: 1,
-                                    ease: "back.out(1.7)",
-                                    onComplete: () => {
-                                        // STEP 4: After button animation, fade in "Social Media" title (0.4s)
-                                        gsap.to(socialContainer, {
-                                            duration: 0.4,
-                                            opacity: 1,
-                                            onComplete: () => {
-                                                // STEP 5: After title appears, stagger animate social icons
-                                                gsap.to(socialIcons, {
-                                                    duration: 0.5,
-                                                    opacity: 1,
-                                                    y: 0,
-                                                    stagger: 0.15,
-                                                    ease: "back.out(1.7)"
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }
+                            completionSection.style.display = "flex";
+                            completionSection.style.opacity = "1";
+                            completionSection.style.pointerEvents = "auto";
+                            completionSection.classList.add("show");
+                            
+                            // Add animate-in classes
+                            if (exploreBtn) exploreBtn.classList.add("animate-in");
+                            if (exploreWhatsappBtn) exploreWhatsappBtn.classList.add("animate-in");
+                            socialContainer.classList.add("animate-in");
+                            
+                            // STEP 3: Animate social icons with stagger
+                            socialIcons.forEach((icon, index) => {
+                                setTimeout(() => {
+                                    icon.classList.add("animate-in");
+                                }, index * 150); // 150ms stagger
+                            });
                         }, 500); // Wait 0.5s after buttons disappear
                     }
                 });
@@ -1202,6 +1251,14 @@
             if (exploreSiteBtn) {
                 exploreSiteBtn.addEventListener('click', () => {
                     window.open('https://cognix.ai', '_blank');
+                });
+            }
+
+            // Add click handler for Explore Cognix on WhatsApp button
+            const exploreWhatsappBtn = document.getElementById('explore-cognix-whatsapp-btn');
+            if (exploreWhatsappBtn) {
+                exploreWhatsappBtn.addEventListener('click', () => {
+                    window.open('https://wa.me/919876543210', '_blank'); // Replace with actual WhatsApp number
                 });
             }
 
