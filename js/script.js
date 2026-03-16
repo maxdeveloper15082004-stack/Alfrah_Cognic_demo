@@ -189,4 +189,105 @@ document.addEventListener('DOMContentLoaded', () => {
             orb.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
     });
-});
+
+    /* ====================================
+       Cognix AI Dashboard Completion Logic
+       ==================================== */
+    
+    // Only run completion logic on dashboard page
+    if (window.location.pathname.includes('cognix-ai.html')) {
+        
+        // Completion Check Function
+        function checkCompletionStatus() {
+            const isDomainCompleted = localStorage.getItem('domainCompleted') === 'true';
+            const isCognixCompleted = localStorage.getItem('cognixCompleted') === 'true';
+            const isPacksCompleted = localStorage.getItem('packsCompleted') === 'true';
+            
+            return isDomainCompleted && isCognixCompleted && isPacksCompleted;
+        }
+
+        // Show Completion Section
+        function showCompletionSection() {
+            // Only proceed if GSAP is available
+            if (typeof gsap === 'undefined') {
+                console.warn('GSAP not available for completion animations');
+                return;
+            }
+
+            const options = document.getElementById('options');
+            const completionSection = document.getElementById('completion-section');
+            const exploreSiteBtn = document.getElementById('explore-cognix-site-btn');
+            const socialContainer = document.querySelector('.social-container');
+            const socialTitle = document.querySelector('.social-title');
+            const socialIcons = document.querySelectorAll('.social-icon');
+            
+            if (!options || !completionSection) return;
+            
+            // STEP 1: Fade out buttons
+            gsap.to(options, {
+                duration: 0.5,
+                                scale: 1,
+                                ease: "back.out(1.7)",
+                                onComplete: () => {
+                                    // STEP 4: After button animation, fade in "Social Media" title (0.4s)
+                                    gsap.to(socialContainer, {
+                                        duration: 0.4,
+                                        opacity: 1,
+                                        onComplete: () => {
+                                            // STEP 5: After title appears, stagger animate social icons
+                                            gsap.to(socialIcons, {
+                                                duration: 0.5,
+                                                opacity: 1,
+                                                y: 0,
+                                                stagger: 0.15,
+                                                ease: "back.out(1.7)"
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+        }
+
+        const options = document.getElementById('options');
+        const completionSection = document.getElementById('completion-section');
+        const exploreSiteBtn = document.getElementById('explore-cognix-site-btn');
+        const socialContainer = document.querySelector('.social-container');
+        const socialTitle = document.querySelector('.social-title');
+        const socialIcons = document.querySelectorAll('.social-icon');
+        
+        if (!options || !completionSection) return;
+        
+        // STEP 1: Fade out buttons
+        gsap.to(options, {
+            duration: 0.5,
+            scale: 1,
+            ease: "back.out(1.7)",
+            onComplete: () => {
+                // STEP 4: After button animation, fade in "Social Media" title (0.4s)
+                gsap.to(socialContainer, {
+                    duration: 0.4,
+                    opacity: 1,
+                    onComplete: () => {
+                        // STEP 5: After title appears, stagger animate social icons
+                        gsap.to(socialIcons, {
+                            duration: 0.5,
+                            opacity: 1,
+                            y: 0,
+                            stagger: 0.15,
+                            ease: "back.out(1.7)"
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    // Add click handler for Explore Cognix Site button
+    const exploreSiteBtn = document.getElementById('explore-cognix-site-btn');
+    if (exploreSiteBtn) {
+        exploreSiteBtn.addEventListener('click', () => {
+            window.open('https://cognix.ai', '_blank');
+        });
+    }
+}

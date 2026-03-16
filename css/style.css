@@ -1101,3 +1101,195 @@ main {
     display: inline-flex;
     text-decoration: none;
 }
+
+/* =========================================
+   Cognix AI Dashboard Completion Section
+   ========================================= */
+.completion-section {
+    position: relative;
+    margin-top: 3rem;
+    text-align: center;
+    z-index: 20;
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.7s ease;
+}
+
+/* Responsive Design for Completion Section */
+@media (max-width: 768px) {
+    .completion-section {
+        margin-top: 2rem;
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .completion-section {
+        margin-top: 1.5rem;
+        width: 95%;
+    }
+}
+
+.completion-section.show {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.completion-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.explore-cognix-btn {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #0ff, #0088ff);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    transform: scale(0.9);
+    opacity: 0;
+}
+
+.explore-cognix-btn.animate-in {
+    animation: exploreBtnIn 0.7s ease forwards;
+}
+
+@keyframes exploreBtnIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.explore-cognix-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+}
+
+.social-container {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.social-container.animate-in {
+    animation: socialIn 0.8s ease 0.3s forwards;
+}
+
+@keyframes socialIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.social-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0ff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.social-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 50%;
+    color: #0ff;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: scale(0.8);
+    text-decoration: none;
+}
+
+.social-icon.animate-in {
+    animation: socialIconIn 0.5s ease forwards;
+}
+
+@keyframes socialIconIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+    background: rgba(0, 255, 255, 0.2);
+    border-color: #0ff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Completion Section Responsive Design */
+@media (max-width: 768px) {
+    .completion-section {
+        bottom: 15%;
+        width: 90%;
+    }
+    
+    .explore-cognix-btn {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .social-icons {
+        gap: 0.75rem;
+    }
+    
+    .social-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .social-title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .completion-section {
+        bottom: 10%;
+        width: 95%;
+    }
+    
+    .social-icons {
+        gap: 0.5rem;
+    }
+    
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+}

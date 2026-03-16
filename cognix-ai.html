@@ -384,6 +384,184 @@
                 margin-top: -15vh;
             }
         }
+
+        /* Completion Section Styles */
+        .completion-section {
+            position: relative;
+            margin-top: 3rem;
+            text-align: center;
+            z-index: 20;
+            display: none;
+            opacity: 0;
+            pointer-events: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.7s ease;
+        }
+
+        .completion-section.show {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .completion-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .explore-cognix-btn {
+            padding: 1.25rem 2.5rem;
+            font-size: 1.2rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        .explore-cognix-btn.animate-in {
+            animation: exploreBtnIn 0.7s ease forwards;
+        }
+
+        @keyframes exploreBtnIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .explore-cognix-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+        }
+
+        .social-container {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .social-container.animate-in {
+            animation: socialIn 0.8s ease 0.3s forwards;
+        }
+
+        @keyframes socialIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .social-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            color: var(--neon-cyan);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .social-icon.animate-in {
+            animation: socialIconIn 0.5s ease forwards;
+        }
+
+        @keyframes socialIconIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .social-icon:hover {
+            transform: scale(1.1);
+            background: rgba(0, 255, 255, 0.2);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .completion-section {
+                margin-top: 2rem;
+                width: 90%;
+            }
+            
+            .explore-cognix-btn {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+            
+            .social-icons {
+                gap: 0.75rem;
+            }
+            
+            .social-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1rem;
+            }
+            
+            .social-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .completion-section {
+                margin-top: 1.5rem;
+                width: 95%;
+            }
+            
+            .social-icons {
+                gap: 0.5rem;
+            }
+            
+            .social-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .social-title {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -428,6 +606,40 @@
             <button class="futuristic-btn" id="btn-explore-packs">
                 <i class="fa-solid fa-box-open"></i> Explore Packs
             </button>
+        </div>
+
+        <!-- Completion Section (Hidden Initially) -->
+        <div class="completion-section" id="completion-section" style="display: none;">
+            <div class="completion-content">
+                <button class="explore-cognix-btn" id="explore-cognix-site-btn">
+                    <i class="fa-solid fa-rocket"></i>
+                    Explore Cognix Site
+                </button>
+                
+                <div class="social-container">
+                    <h3 class="social-title">Social Media</h3>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank" class="social-icon" aria-label="Facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" class="social-icon" aria-label="LinkedIn">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="social-icon" aria-label="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="https://threads.net" target="_blank" class="social-icon" aria-label="Threads">
+                            <i class="fa-brands fa-threads"></i>
+                        </a>
+                        <a href="https://youtube.com" target="_blank" class="social-icon" aria-label="YouTube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                        <a href="https://x.com" target="_blank" class="social-icon" aria-label="X (Twitter)">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -760,7 +972,22 @@
                               boxShadow: "0 0 25px rgba(0, 255, 255, 0.6)", 
                               duration: 0.5, 
                               ease: "back.out(1.5)" 
-                          });
+                          }, "-=0.2")
+                          .to(btn, { 
+                              scale: 0.98, 
+                              filter: "brightness(1)",
+                              boxShadow: "0 0 25px rgba(0, 255, 255, 0.6)", 
+                              duration: 0.5, 
+                              ease: "back.out(1.5)" 
+                          }, "-=0.2")
+                          .to(btn, { 
+                              scale: 1, 
+                              filter: "brightness(1)",
+                              boxShadow: "0 0 25px rgba(0, 255, 255, 0.6)", 
+                              duration: 0.5, 
+                              ease: "back.out(1.5)" 
+                          }, "-=0.2")
+                          .add(updateDOM);
                 } else {
                     updateDOM();
                 }
@@ -823,7 +1050,13 @@
                   yoyo: true,
                   repeat: 1,
                   stagger: 0.2
-              }, "-=0.5");
+              }, "-=0.5")
+              // Hero sequence complete - start completion section if all tasks done
+              .add(() => {
+                  if (checkCompletionStatus()) {
+                      showCompletionSection();
+                  }
+              });
 
 
             // ==========================================
@@ -890,6 +1123,87 @@
                 setTimeout(scheduleMeteors, 800 + Math.random() * 3000);
             };
             setTimeout(scheduleMeteors, 2000);
+
+            // ==========================================
+            // COMPLETION CHECK AND ANIMATION LOGIC
+            // ==========================================
+            
+            // Completion Check Function
+            function checkCompletionStatus() {
+                const isDomainCompleted = localStorage.getItem('domainCompleted') === 'true';
+                const isCognixCompleted = localStorage.getItem('cognixCompleted') === 'true';
+                const isPacksCompleted = localStorage.getItem('packsCompleted') === 'true';
+                
+                return isDomainCompleted && isCognixCompleted && isPacksCompleted;
+            }
+
+            // Show Completion Section
+            function showCompletionSection() {
+                const options = document.getElementById('options');
+                const completionSection = document.getElementById('completion-section');
+                const exploreBtn = document.getElementById('explore-cognix-site-btn');
+                const socialContainer = document.querySelector('.social-container');
+                const socialTitle = document.querySelector('.social-title');
+                const socialIcons = document.querySelectorAll('.social-icon');
+                
+                // STEP 1: Fade out buttons
+                gsap.to(options, {
+                    duration: 0.5,
+                    opacity: 0,
+                    onComplete: () => {
+                        // Hide buttons container
+                        options.style.display = 'none';
+                        
+                        // STEP 2: Wait 0.5s, then show completion section
+                        setTimeout(() => {
+                            if (completionSection) {
+                                completionSection.style.display = "flex";
+                                completionSection.style.opacity = "1";
+                                completionSection.style.pointerEvents = "auto";
+                                completionSection.classList.add("show");
+                                
+                                // Ensure all elements start hidden for animation
+                                gsap.set(exploreBtn, { opacity: 0, scale: 0 });
+                                gsap.set(socialContainer, { opacity: 0 });
+                                gsap.set(socialIcons, { opacity: 0, y: 20 });
+                                
+                                // STEP 3: Animate "Explore Cognix Site" button (0.7s scale animation)
+                                gsap.to(exploreBtn, {
+                                    duration: 0.7,
+                                    opacity: 1,
+                                    scale: 1,
+                                    ease: "back.out(1.7)",
+                                    onComplete: () => {
+                                        // STEP 4: After button animation, fade in "Social Media" title (0.4s)
+                                        gsap.to(socialContainer, {
+                                            duration: 0.4,
+                                            opacity: 1,
+                                            onComplete: () => {
+                                                // STEP 5: After title appears, stagger animate social icons
+                                                gsap.to(socialIcons, {
+                                                    duration: 0.5,
+                                                    opacity: 1,
+                                                    y: 0,
+                                                    stagger: 0.15,
+                                                    ease: "back.out(1.7)"
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }, 500); // Wait 0.5s after buttons disappear
+                    }
+                });
+            }
+
+            // Add click handler for Explore Cognix Site button
+            const exploreSiteBtn = document.getElementById('explore-cognix-site-btn');
+            if (exploreSiteBtn) {
+                exploreSiteBtn.addEventListener('click', () => {
+                    window.open('https://cognix.ai', '_blank');
+                });
+            }
 
         });
     </script>
